@@ -1,0 +1,9 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://localhost:8848
