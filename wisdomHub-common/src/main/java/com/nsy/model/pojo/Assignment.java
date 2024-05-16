@@ -58,6 +58,12 @@ public class Assignment implements Serializable {
     @TableField(value = "score")
     private BigDecimal score;
 
+    /**
+     * 作业标题
+     */
+    @TableField(value = "title")
+    private String title;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

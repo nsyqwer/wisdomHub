@@ -5,16 +5,15 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
-import java.util.Date;
 import lombok.Data;
 
 /**
  * 
- * @TableName resource
+ * @TableName chapter
  */
-@TableName(value ="resource")
+@TableName(value ="chapter")
 @Data
-public class Resource implements Serializable {
+public class Chapter implements Serializable {
     /**
      * 主键id
      */
@@ -22,34 +21,34 @@ public class Resource implements Serializable {
     private Integer id;
 
     /**
+     * 章节标题
+     */
+    @TableField(value = "chapter_title")
+    private String chapterTitle;
+
+    /**
+     * 章节序号
+     */
+    @TableField(value = "chapter_number")
+    private Integer chapterNumber;
+
+    /**
+     * 章节层级
+     */
+    @TableField(value = "level")
+    private Integer level;
+
+    /**
+     * 父级章节id
+     */
+    @TableField(value = "father_id")
+    private Integer fatherId;
+
+    /**
      * 课程id
      */
     @TableField(value = "course_id")
     private Integer courseId;
-
-    /**
-     * 资源
-     */
-    @TableField(value = "content")
-    private String content;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time")
-    private Date createTime;
-
-    /**
-     * 创建者id
-     */
-    @TableField(value = "creator_id")
-    private Integer creatorId;
-
-    /**
-     * 创建者名字
-     */
-    @TableField(value = "creator_name")
-    private String creatorName;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

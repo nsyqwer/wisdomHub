@@ -37,7 +37,7 @@ public class StudentAssignment implements Serializable {
      * 作业完成状态
      */
     @TableField(value = "state")
-    private String state;
+    private Integer state;
 
     /**
      * 学生得分
@@ -56,6 +56,12 @@ public class StudentAssignment implements Serializable {
      */
     @TableField(value = "comment")
     private String comment;
+
+    /**
+     * 学生作答内容（json）
+     */
+    @TableField(value = "comment")
+    private String content;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

@@ -10,11 +10,11 @@ import lombok.Data;
 
 /**
  * 
- * @TableName resource
+ * @TableName exam
  */
-@TableName(value ="resource")
+@TableName(value ="exam")
 @Data
-public class Resource implements Serializable {
+public class Exam implements Serializable {
     /**
      * 主键id
      */
@@ -28,28 +28,16 @@ public class Resource implements Serializable {
     private Integer courseId;
 
     /**
-     * 资源
+     * 开始时间
      */
-    @TableField(value = "content")
-    private String content;
+    @TableField(value = "begin_date")
+    private Date beginDate;
 
     /**
-     * 创建时间
+     * 结束时间
      */
-    @TableField(value = "create_time")
-    private Date createTime;
-
-    /**
-     * 创建者id
-     */
-    @TableField(value = "creator_id")
-    private Integer creatorId;
-
-    /**
-     * 创建者名字
-     */
-    @TableField(value = "creator_name")
-    private String creatorName;
+    @TableField(value = "end_date")
+    private Date endDate;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
