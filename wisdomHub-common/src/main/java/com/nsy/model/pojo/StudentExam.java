@@ -58,6 +58,17 @@ public class StudentExam implements Serializable {
     @TableField(value = "student_end_date")
     private Date studentEndDate;
 
+    /**
+     * 考试标题
+     */
+    @TableField(value = "exam_title")
+    private String examTitle;
+
+    /**
+     * 课程id
+     */
+    @TableField(value = "course_id")
+    private Integer courseId;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

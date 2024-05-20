@@ -29,6 +29,8 @@
         <module>wisdomHub-common</module>
         <module>wisdomHub-gateway</module>
         <module>wisdomHub-student</module>
+        <module>wisdomHub-teacher</module>
+        <module>wisdomHub-user</module>
     </modules>
 
     <dependencies>

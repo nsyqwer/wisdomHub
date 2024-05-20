@@ -63,6 +63,12 @@ public class StudentAssignment implements Serializable {
     @TableField(value = "comment")
     private String content;
 
+    /**
+     * 课程id
+     */
+    @TableField(value = "course_id")
+    private Integer courseId;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

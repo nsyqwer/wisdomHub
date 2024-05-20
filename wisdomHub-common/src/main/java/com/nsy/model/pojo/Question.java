@@ -50,6 +50,18 @@ public class Question implements Serializable {
     @TableField(value = "course_id")
     private Integer courseId;
 
+    /**
+     * 创建者id
+     */
+    @TableField(value = "creator_id")
+    private Integer creatorId;
+
+    /**
+     * 创建者名字
+     */
+    @TableField(value = "creator_name")
+    private String creatorName;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

@@ -39,6 +39,13 @@ public class Course implements Serializable {
     @TableField(value = "user_id")
     private Integer userId;
 
+    /**
+     * 课程封面
+     */
+    @TableField(value = "image")
+    private Integer image;
+
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

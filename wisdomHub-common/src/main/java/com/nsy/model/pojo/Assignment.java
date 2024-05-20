@@ -64,6 +64,13 @@ public class Assignment implements Serializable {
     @TableField(value = "title")
     private String title;
 
+    /**
+     * 作业状态
+     */
+    @TableField(value = "state")
+    private Integer state;
+
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

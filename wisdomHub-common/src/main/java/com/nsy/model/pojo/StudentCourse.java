@@ -38,6 +38,12 @@ public class StudentCourse implements Serializable {
     @TableField(value = "course_name")
     private String courseName;
 
+    /**
+     * 课程封面
+     */
+    @TableField(value = "course_image")
+    private String courseImage;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

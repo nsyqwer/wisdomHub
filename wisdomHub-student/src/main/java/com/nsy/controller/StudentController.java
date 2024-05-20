@@ -5,16 +5,14 @@ import com.nsy.model.dto.StudentAssignmentDTO;
 import com.nsy.model.pojo.Course;
 import com.nsy.model.pojo.Resource;
 import com.nsy.model.pojo.TaskPoint;
-import com.nsy.model.vo.ChapterMainVO;
-import com.nsy.model.vo.MyAssignmentVO;
-import com.sun.xml.internal.bind.v2.TODO;
+import com.nsy.model.vo.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @className: CourseController
+ * @className: StudentController
  * @author: 宁舒意
  * @description: TODO
  * @date: 2024/5/15 16:22
@@ -22,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/student")
-public class CourseController {
+public class StudentController {
 
 
     /**
@@ -33,7 +31,7 @@ public class CourseController {
      * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.pojo.Course>>
     **/
     @GetMapping("/courses/{studentId}")
-    public BaseResult<List<Course>> CoursesByStudentId(@PathVariable int studentId){
+    public BaseResult<List<Course>> coursesByStudentId(@PathVariable int studentId){
         List<Course> courseList = new ArrayList<>();
         return new BaseResult(200,"获取我的课程成功",courseList);
     }
@@ -47,7 +45,7 @@ public class CourseController {
      * @return com.nsy.model.BaseResult<com.nsy.model.vo.ChapterMainVO>
     **/
     @GetMapping("/chapters/{courseId}")
-    public BaseResult<ChapterMainVO> ChaptersByCourseId(@PathVariable int courseId){
+    public BaseResult<ChapterMainVO> chaptersByCourseId(@PathVariable int courseId){
         ChapterMainVO chapterMainVo =new ChapterMainVO();
         return new BaseResult(200,"获取课程任务点成功",chapterMainVo);
     }
@@ -61,7 +59,7 @@ public class CourseController {
      * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.pojo.TaskPoint>>
     **/
     @GetMapping("/task_points/{chapterId}")
-    public BaseResult<List<TaskPoint>> TaskPointsByChapterId(@PathVariable int chapterId){
+    public BaseResult<List<TaskPoint>> taskPointsByChapterId(@PathVariable int chapterId){
         List<TaskPoint> taskPointList =new ArrayList<>();
         return new BaseResult(200,"根据章节id获取任务点成功",taskPointList);
     }
@@ -73,11 +71,11 @@ public class CourseController {
      * @date 20:41 2024/5/16
      * @param studentId 学生id
      * @param courseId 课程id
-     * @param oreration 操作id，0表示查询所有，1表示查询已完成的，2表示查询未完成的
+     * @param operation 操作id，0表示查询所有，1表示查询已完成的，2表示查询未完成的
      * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.vo.MyAssignmentVO>>
     **/
     @GetMapping("/assignments")
-    public BaseResult<List<MyAssignmentVO>> Assignments(@RequestParam int studentId,@RequestParam int courseId,@RequestParam int oreration){
+    public BaseResult<List<MyAssignmentVO>> assignments(@RequestParam int studentId,@RequestParam int courseId,@RequestParam int operation){
         //未批改状态也是已完成作业，还有一个状态是草稿
         List<MyAssignmentVO> myAssignmentVOList =new ArrayList<>();
         return new BaseResult(200,"获取成功",myAssignmentVOList);
@@ -92,7 +90,7 @@ public class CourseController {
      * @return com.nsy.model.BaseResult
     **/
     @PutMapping("/assignment")
-    public BaseResult Assignment(@RequestBody StudentAssignmentDTO studentAssignmentDTO){
+    public BaseResult assignment(@RequestBody StudentAssignmentDTO studentAssignmentDTO){
         return new BaseResult(200,"成功");
     }
 
@@ -105,12 +103,62 @@ public class CourseController {
      * @return com.nsy.model.BaseResult
     **/
     @GetMapping("/resources/{courseId}")
-    public BaseResult Resource(@PathVariable int courseId){
+    public BaseResult<List<Resource>> resource(@PathVariable int courseId){
         List<Resource> resourceList =new ArrayList<>();
         return new BaseResult(200,"获取所有课程资源成功",resourceList);
     }
 
     //TODO 下载资料
+
+
+
+    /**
+     * 学生：学习记录
+     * @author 宁舒意
+     * @date 11:23 2024/5/17
+     * @param studentId 学生id
+     * @param courseId 课程id
+     * @return com.nsy.model.BaseResult<com.nsy.model.vo.StudyRecordVO>
+    **/
+    @GetMapping("/study-record")
+    public BaseResult<StudyRecordVO> studyRecord(@RequestParam int studentId,@RequestParam int courseId){
+        StudyRecordVO studyRecordVO =new StudyRecordVO();
+        return new BaseResult(200,"获取学习记录成功",studyRecordVO);
+    }
+
+
+    /**
+     * 学生：查看该课程错题集
+     * @author 宁舒意
+     * @date 11:33 2024/5/17
+     * @param studentId 学生id
+     * @param courseId  课程id
+     * @return com.nsy.model.BaseResult<com.nsy.model.vo.MistakeVo>
+    **/
+    @GetMapping("/mistakes")
+    public BaseResult<MistakeVo> mistakes(@RequestParam int studentId,@RequestParam int courseId){
+        MistakeVo mistakeVo =new MistakeVo();
+        return new BaseResult(200,"获取该课程错题集成功",mistakeVo);
+
+    }
+
+
+
+    /**
+     * 学生：查看错题详情
+     * @author 宁舒意
+     * @date 15:49 2024/5/17
+     * @param mistakeId 错题id
+     * @return com.nsy.model.BaseResult<com.nsy.model.vo.MistakeDetailVO>
+    **/
+    @GetMapping("/mistake-detail/{mistakeId}")
+    public BaseResult<MistakeDetailVO> mistakeDetail(@PathVariable int mistakeId){
+        MistakeDetailVO mistakeDetailVO =new MistakeDetailVO();
+        return new BaseResult(200,"获取错题详情成功",mistakeDetailVO);
+    }
+
+
+
 
 
 

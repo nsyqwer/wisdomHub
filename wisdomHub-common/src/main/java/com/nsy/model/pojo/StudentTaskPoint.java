@@ -38,6 +38,12 @@ public class StudentTaskPoint implements Serializable {
     @TableField(value = "percent")
     private Integer percent;
 
+    /**
+     * 课程id
+     */
+    @TableField(value = "course_id")
+    private Integer courseId;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

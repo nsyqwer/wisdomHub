@@ -39,6 +39,12 @@ public class Exam implements Serializable {
     @TableField(value = "end_date")
     private Date endDate;
 
+    /**
+     * 考试标题
+     */
+    @TableField(value = "title")
+    private String title;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }
