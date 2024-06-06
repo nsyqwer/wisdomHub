@@ -202,8 +202,8 @@ public class StudentController {
 
 
 
-    //学生进行签到
-    @PutMapping("")
+//    //学生进行签到
+//    @PutMapping("")
 
 
 
