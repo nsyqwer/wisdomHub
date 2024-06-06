@@ -32,7 +32,7 @@ public class MyAssignmentVO {
     private String title;
 
     /**
-     * 作业状态
+     * 作业状态，已完成，未完成，待批阅
      */
     private String state;
 

@@ -35,8 +35,8 @@ public class StudentTaskPoint implements Serializable {
     /**
      * 完成进度，100表示完成
      */
-    @TableField(value = "percent")
-    private Integer percent;
+    @TableField(value = "state")
+    private Integer state;
 
     /**
      * 课程id

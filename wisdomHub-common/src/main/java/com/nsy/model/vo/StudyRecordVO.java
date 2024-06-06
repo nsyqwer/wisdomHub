@@ -49,6 +49,11 @@ public class StudyRecordVO {
     private int allExamNum;
 
     /**
+     * 该课程已完成考试数量
+     */
+    private int finishExamNum;
+
+    /**
      * 该课程平均考试分数
      */
     private BigDecimal avgExamScore;

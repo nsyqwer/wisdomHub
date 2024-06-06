@@ -10,11 +10,11 @@ import lombok.Data;
 
 /**
  * 
- * @TableName course
+ * @TableName student_signin
  */
-@TableName(value ="course")
+@TableName(value ="student_signin")
 @Data
-public class Course implements Serializable {
+public class StudentSignin implements Serializable {
     /**
      * 主键id
      */
@@ -22,28 +22,28 @@ public class Course implements Serializable {
     private Integer id;
 
     /**
-     * 课程名字
+     * 签到表id
      */
-    @TableField(value = "course_name")
-    private String courseName;
+    @TableField(value = "signin_id")
+    private Integer signinId;
 
     /**
-     * 创建时间
+     * 学生id
      */
-    @TableField(value = "create_time")
-    private Date createTime;
+    @TableField(value = "student_id")
+    private Integer studentId;
 
     /**
-     * 创建者id
+     * 签到时间
      */
-    @TableField(value = "user_id")
-    private Integer userId;
+    @TableField(value = "signin_time")
+    private Date signinTime;
 
     /**
-     * 封面
+     * 学生名字
      */
-    @TableField(value = "image")
-    private String image;
+    @TableField(value = "student_name")
+    private String studentName;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

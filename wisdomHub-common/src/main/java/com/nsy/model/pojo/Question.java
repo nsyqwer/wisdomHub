@@ -51,6 +51,12 @@ public class Question implements Serializable {
     private Integer courseId;
 
     /**
+     * 课程名字
+     */
+    @TableField(value = "course_name")
+    private String courseName;
+
+    /**
      * 创建者id
      */
     @TableField(value = "creator_id")

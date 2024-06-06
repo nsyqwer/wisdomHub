@@ -41,4 +41,10 @@ public class UserInfoVO {
      * 头像
      */
     private String avatar;
+
+    /**
+     * 身份
+     */
+    private String identity;
+
 }

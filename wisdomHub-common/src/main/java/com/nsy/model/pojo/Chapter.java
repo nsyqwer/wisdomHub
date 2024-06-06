@@ -50,6 +50,18 @@ public class Chapter implements Serializable {
     @TableField(value = "course_id")
     private Integer courseId;
 
+    /**
+     * 任务点标题
+     */
+    @TableField(value = "task_point_title")
+    private String taskPointTitle;
+
+    /**
+     * 任务点内容
+     */
+    @TableField(value = "content")
+    private String content;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

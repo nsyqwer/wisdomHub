@@ -40,7 +40,7 @@ public class StudentAssignment implements Serializable {
     private Integer state;
 
     /**
-     * 学生得分
+     * 学生得分(作业总得分)
      */
     @TableField(value = "student_score")
     private BigDecimal studentScore;
@@ -58,9 +58,9 @@ public class StudentAssignment implements Serializable {
     private String comment;
 
     /**
-     * 学生作答内容（json）
+     * 学生回答内容（json）（AssignmentQuestion类的对象）
      */
-    @TableField(value = "comment")
+    @TableField(value = "content")
     private String content;
 
     /**

@@ -65,11 +65,10 @@ public class Assignment implements Serializable {
     private String title;
 
     /**
-     * 作业状态
+     * 作业状态（草稿，进行中，已结束）
      */
     @TableField(value = "state")
     private Integer state;
-
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

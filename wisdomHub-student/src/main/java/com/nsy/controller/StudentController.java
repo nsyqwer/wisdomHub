@@ -1,11 +1,15 @@
 package com.nsy.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.nsy.model.BaseResult;
+import com.nsy.model.dto.AssignmentQuestionDTO;
 import com.nsy.model.dto.StudentAssignmentDTO;
-import com.nsy.model.pojo.Course;
-import com.nsy.model.pojo.Resource;
-import com.nsy.model.pojo.TaskPoint;
+import com.nsy.model.pojo.*;
 import com.nsy.model.vo.*;
+import com.nsy.service.AssignmentService;
+import com.nsy.service.ResourceService;
+import com.nsy.service.StudentAssignmentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -22,6 +26,15 @@ import java.util.List;
 @RequestMapping("/student")
 public class StudentController {
 
+    @Autowired
+    StudentAssignmentService studentAssignmentService;
+
+    @Autowired
+    ResourceService resourceService;
+
+    @Autowired
+    AssignmentService assignmentService;
+
 
     /**
      * 学生：查看我的课程
@@ -37,32 +50,21 @@ public class StudentController {
     }
 
 
-    /**
-     * 学生：查看某门课程任务点
-     * @author 宁舒意
-     * @date 16:27 2024/5/16
-     * @param courseId 课程id
-     * @return com.nsy.model.BaseResult<com.nsy.model.vo.ChapterMainVO>
-    **/
+   /**
+    * 学生：查看某门课程任务点
+    * @author 宁舒意
+    * @date 8:17 2024/5/27
+    * @param courseId 课程id
+    * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.pojo.Chapter>>
+   **/
     @GetMapping("/chapters/{courseId}")
-    public BaseResult<ChapterMainVO> chaptersByCourseId(@PathVariable int courseId){
-        ChapterMainVO chapterMainVo =new ChapterMainVO();
-        return new BaseResult(200,"获取课程任务点成功",chapterMainVo);
+    public BaseResult<List<Chapter>> chaptersByCourseId(@PathVariable int courseId){
+       List<Chapter> chapterList=new ArrayList<>();
+        return new BaseResult(200,"获取课程章节任务点目录成功",chapterList);
     }
 
 
-    /**
-     * 学生：根据章节id获取任务点成功
-     * @author 宁舒意
-     * @date 19:39 2024/5/16
-     * @param chapterId 章节ID
-     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.pojo.TaskPoint>>
-    **/
-    @GetMapping("/task_points/{chapterId}")
-    public BaseResult<List<TaskPoint>> taskPointsByChapterId(@PathVariable int chapterId){
-        List<TaskPoint> taskPointList =new ArrayList<>();
-        return new BaseResult(200,"根据章节id获取任务点成功",taskPointList);
-    }
+
 
 
     /**
@@ -82,8 +84,29 @@ public class StudentController {
 
     }
 
+    //学生：查看作业详情 state（未完成0，待批阅1，已完成2）
+    //首先是老师发布作业，content里面每个json对象都是AssignmentQuestionDTO对象
+    //然后是学生写作业，写的时候AssignmentQuestionDTO里面的content没有答案，和解析
+    //再是老师批改作业，批改完后，将答案和答案解析放进studentAssignDTO里面的content的题目中
     /**
-     * 学生：写作业,state这个字段，1表示未完成，2表示草稿，3表示未批改，4表示已完成
+     * 学生：查看作业详情
+     * @author 宁舒意
+     * @date 23:32 2024/6/3
+     * @param studentId 学生id
+     * @param assignmentId 作业id
+     * @return com.nsy.model.BaseResult<com.nsy.model.pojo.StudentAssignment>
+    **/
+    @GetMapping("/assignment/{studentId}/{assignmentId}")
+    public BaseResult<StudentAssignment> assignmentById(@PathVariable int studentId,@PathVariable int assignmentId){
+        QueryWrapper<StudentAssignment> studentAssignmentQueryWrapper =new QueryWrapper<StudentAssignment>()
+                .eq("student_id",studentId).eq("assignment_id",assignmentId);
+        StudentAssignment studentAssignment = studentAssignmentService.getOne(studentAssignmentQueryWrapper);
+        return new BaseResult(200,"获取作业详情成功",studentAssignment);
+    }
+
+    
+    /**
+     * 学生：写作业,其中state这个字段表示作业完成状态（未完成0，待批阅1，已完成2）
      * @author 宁舒意
      * @date 21:09 2024/5/16
      * @param studentAssignmentDTO
@@ -91,6 +114,12 @@ public class StudentController {
     **/
     @PutMapping("/assignment")
     public BaseResult assignment(@RequestBody StudentAssignmentDTO studentAssignmentDTO){
+        StudentAssignment studentAssignment =new StudentAssignment();
+        studentAssignment.setStudentId(studentAssignmentDTO.getStudentId());
+        studentAssignment.setAssignmentId(studentAssignmentDTO.getAssignmentId());
+        studentAssignment.setState(studentAssignmentDTO.getState());
+        studentAssignment.setContent(studentAssignmentDTO.getContent());
+        studentAssignmentService.save(studentAssignment);
         return new BaseResult(200,"成功");
     }
 
@@ -104,6 +133,7 @@ public class StudentController {
     **/
     @GetMapping("/resources/{courseId}")
     public BaseResult<List<Resource>> resource(@PathVariable int courseId){
+        QueryWrapper<Resource> resourceQueryWrapper =new QueryWrapper<Resource>().eq("course_id",courseId);
         List<Resource> resourceList =new ArrayList<>();
         return new BaseResult(200,"获取所有课程资源成功",resourceList);
     }
@@ -136,10 +166,23 @@ public class StudentController {
      * @return com.nsy.model.BaseResult<com.nsy.model.vo.MistakeVo>
     **/
     @GetMapping("/mistakes")
-    public BaseResult<MistakeVo> mistakes(@RequestParam int studentId,@RequestParam int courseId){
-        MistakeVo mistakeVo =new MistakeVo();
-        return new BaseResult(200,"获取该课程错题集成功",mistakeVo);
+    public BaseResult<List<MistakeVo>> mistakes(@RequestParam int studentId,@RequestParam int courseId){
+        List<MistakeVo> mistakeVoList = new ArrayList<>();
+        return new BaseResult(200,"获取该课程错题集成功",mistakeVoList);
+    }
 
+
+    /**
+     * 学生：查看该学生所有课程错题集
+     * @author 宁舒意
+     * @date 0:08 2024/5/26
+     * @param studentId 学生id
+     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.vo.MistakeVo>>
+    **/
+    @GetMapping("/mistakes-all")
+    public BaseResult<List<MistakeVo>> mistakeAll(@RequestParam int studentId){
+        List<MistakeVo> mistakeVoList = new ArrayList<>();
+        return new BaseResult(200,"获取所有课程错题集成功",mistakeVoList);
     }
 
 
@@ -159,6 +202,8 @@ public class StudentController {
 
 
 
+    //学生进行签到
+    @PutMapping("")
 
 
 
