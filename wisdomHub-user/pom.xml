@@ -8,10 +8,10 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <groupId>com.nsy</groupId>
-    <artifactId>wisdomHub-teacher</artifactId>
+    <artifactId>wisdomHub-user</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>wisdomHub-teacher</name>
-    <description>wisdomHub-teacher</description>
+    <name>wisdomHub-user</name>
+    <description>wisdomHub-user</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,7 +21,6 @@
         <spring-cloud.version>2021.0.5</spring-cloud.version>
     </properties>
     <dependencies>
-
         <dependency>
             <groupId>com.nsy</groupId>
             <artifactId>wisdomHub-common</artifactId>

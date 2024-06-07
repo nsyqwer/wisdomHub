@@ -134,7 +134,7 @@ public class StudentController {
     @GetMapping("/resources/{courseId}")
     public BaseResult<List<Resource>> resource(@PathVariable int courseId){
         QueryWrapper<Resource> resourceQueryWrapper =new QueryWrapper<Resource>().eq("course_id",courseId);
-        List<Resource> resourceList =new ArrayList<>();
+        List<Resource> resourceList =resourceService.list(resourceQueryWrapper);
         return new BaseResult(200,"获取所有课程资源成功",resourceList);
     }
 
