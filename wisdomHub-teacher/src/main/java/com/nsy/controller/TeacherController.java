@@ -9,7 +9,7 @@ import com.nsy.model.BaseResult;
 
 import com.nsy.model.dto.AssignmentAddDTO;
 import com.nsy.model.dto.AssignmentCorrectDTO;
-import com.nsy.model.dto.AssignmentPulishDTO;
+import com.nsy.model.dto.AssignmentPublishDTO;
 import com.nsy.model.dto.AssignmentQuestionDTO;
 import com.nsy.model.pojo.*;
 
@@ -268,18 +268,18 @@ public class TeacherController {
      * 教师：发布作业
      * @author 宁舒意
      * @date 23:27 2024/6/3
-     * @param assignmentPulishDTO
+     * @param assignmentPublishDTO
      * @return com.nsy.model.BaseResult
     **/
     @PutMapping("/assignment-publish")
-    public BaseResult publishAssignment(@RequestBody AssignmentPulishDTO assignmentPulishDTO){
-        Assignment assignment =assignmentService.getById(assignmentPulishDTO.getAssignmentId());
-        AssignmentDTOMapper.INSTANCE.PublishDTOtoAssignment(assignmentPulishDTO,assignment);
+    public BaseResult publishAssignment(@RequestBody AssignmentPublishDTO assignmentPublishDTO){
+        Assignment assignment =assignmentService.getById(assignmentPublishDTO.getAssignmentId());
+        AssignmentDTOMapper.INSTANCE.PublishDTOtoAssignment(assignmentPublishDTO,assignment);
         //将作业状态改为1（进行中）
         assignment.setState(1);
         assignmentService.updateById(assignment);
         //将每个学生都加入到作业中来
-        List<Integer> studentIds =studentAssignmentService.findStudentIdsByClassIds(assignmentPulishDTO.getClassIdList());
+        List<Integer> studentIds =studentAssignmentService.findStudentIdsByClassIds(assignmentPublishDTO.getClassIdList());
         StudentAssignment studentAssignment =new StudentAssignment();
         studentAssignment.setAssignmentId(assignment.getId());
         studentAssignment.setState(0);//0表示未完成

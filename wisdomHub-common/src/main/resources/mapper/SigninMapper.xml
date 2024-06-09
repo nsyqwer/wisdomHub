@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.nsy.mapper.SigninMapper">
+<mapper namespace="com.nsy.model.mapper.SigninMapper">
 
     <resultMap id="BaseResultMap" type="com.nsy.model.pojo.Signin">
             <id property="id" column="id" jdbcType="INTEGER"/>
@@ -13,11 +13,12 @@
             <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
             <result property="type" column="type" jdbcType="INTEGER"/>
             <result property="answer" column="answer" jdbcType="VARCHAR"/>
+            <result property="teacherName" column="teacher_name" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,course_id,teacher_id,
         title,begin_time,end_time,
-        type,answer
+        type,answer,teacher_name
     </sql>
 </mapper>

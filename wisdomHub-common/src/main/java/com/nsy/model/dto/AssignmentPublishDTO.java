@@ -1,21 +1,18 @@
 package com.nsy.model.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
 
 /**
- * @className: AssignmentPulishDTO
+ * @className: AssignmentPublishDTO
  * @author: 宁舒意
  * @description: TODO
  * @date: 2024/6/3 21:57
  */
 @Data
-public class AssignmentPulishDTO {
+public class AssignmentPublishDTO {
     /**
      * 作业id
      */

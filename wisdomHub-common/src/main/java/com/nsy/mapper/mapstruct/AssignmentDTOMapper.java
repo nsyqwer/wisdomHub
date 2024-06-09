@@ -1,7 +1,7 @@
 package com.nsy.mapper.mapstruct;
 
 import com.nsy.model.dto.AssignmentAddDTO;
-import com.nsy.model.dto.AssignmentPulishDTO;
+import com.nsy.model.dto.AssignmentPublishDTO;
 import com.nsy.model.pojo.Assignment;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
@@ -13,6 +13,6 @@ public interface AssignmentDTOMapper {
 
     void AddDTOtoAssignment(AssignmentAddDTO assignmentAddDTO, @MappingTarget Assignment assignment);
 
-    void PublishDTOtoAssignment(AssignmentPulishDTO assignmentPulishDTO,@MappingTarget Assignment assignment);
+    void PublishDTOtoAssignment(AssignmentPublishDTO assignmentPublishDTO, @MappingTarget Assignment assignment);
 
 }
