@@ -33,11 +33,11 @@ public class Course implements Serializable {
     @TableField(value = "create_time")
     private Date createTime;
 
-    /**
-     * 创建者id
-     */
-    @TableField(value = "user_id")
-    private Integer userId;
+//    /**
+//     * 创建者id
+//     */
+//    @TableField(value = "user_id")
+//    private Integer userId;
 
     /**
      * 封面

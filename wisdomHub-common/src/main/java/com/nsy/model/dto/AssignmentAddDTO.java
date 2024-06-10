@@ -3,6 +3,8 @@ package com.nsy.model.dto;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @className: AssignmentAddDTO
  * @author: 宁舒意
@@ -25,5 +27,5 @@ public class AssignmentAddDTO {
     /**
      * 作业内容
      */
-    private String content;
+    private List<AssignmentQuestionDTO> content;
 }
