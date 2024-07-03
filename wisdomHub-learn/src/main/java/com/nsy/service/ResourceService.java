@@ -1,6 +1,6 @@
 package com.nsy.service;
 
-import com.nsy.model.pojo.Resource;
+import com.nsy.pojo.Resource;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.stereotype.Service;
 

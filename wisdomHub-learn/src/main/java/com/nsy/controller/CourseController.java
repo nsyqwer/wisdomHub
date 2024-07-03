@@ -1,9 +1,9 @@
 package com.nsy.controller;
 
-import com.nsy.model.BaseResult;
-import com.nsy.model.pojo.Chapter;
-import com.nsy.model.pojo.Course;
-import com.nsy.model.vo.StudyRecordVO;
+import com.nsy.BaseResult;
+import com.nsy.pojo.Chapter;
+import com.nsy.pojo.Course;
+import com.nsy.vo.StudyRecordVO;
 import com.nsy.service.ChapterService;
 import com.nsy.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class CourseController {
      * @author 宁舒意
      * @date 16:27 2024/5/16
      * @param studentId 学生id
-     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.pojo.Course>>
+     * @return com.nsy.BaseResult<java.util.List<com.nsy.model.pojo.Course>>
      **/
     @GetMapping("/courses/{studentId}")
     public BaseResult<List<Course>> coursesByStudentId(@PathVariable int studentId){
@@ -48,7 +48,7 @@ public class CourseController {
      * @author 宁舒意
      * @date 19:25 2024/5/19
      * @param teacherId 教师id
-     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.pojo.Course>>
+     * @return com.nsy.BaseResult<java.util.List<com.nsy.model.pojo.Course>>
      **/
     @GetMapping("/{teacherId}")
     public BaseResult<List<Course>> courses(@PathVariable Integer teacherId){
@@ -64,7 +64,7 @@ public class CourseController {
      * @author 宁舒意
      * @date 19:25 2024/5/19
      * @param course 课程实体
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @PutMapping("")
     public BaseResult saveCourse(@RequestBody Course course){
@@ -78,7 +78,7 @@ public class CourseController {
      * @author 宁舒意
      * @date 19:26 2024/5/19
      * @param courseId 课程id
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @DeleteMapping("/{courseId}")
     public BaseResult removeCourse(@PathVariable int courseId){
@@ -92,7 +92,7 @@ public class CourseController {
      * @author 宁舒意
      * @date 8:17 2024/5/27
      * @param courseId 课程id
-     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.pojo.Chapter>>
+     * @return com.nsy.BaseResult<java.util.List<com.nsy.model.pojo.Chapter>>
      **/
     @GetMapping("/chapters/{courseId}")
     public BaseResult<List<Chapter>> chaptersByCourseId(@PathVariable int courseId){
@@ -106,7 +106,7 @@ public class CourseController {
      * @author 宁舒意
      * @date 21:15 2024/5/23
      * @param chapterId 章节id
-     * @return com.nsy.model.BaseResult<com.nsy.model.dto.ChapterDetailDTO>
+     * @return com.nsy.BaseResult<com.nsy.model.dto.ChapterDetailDTO>
      **/
     @GetMapping("/chapter/{chapterId}")
     public BaseResult<Chapter> getChapters(@PathVariable Integer chapterId){
@@ -119,7 +119,7 @@ public class CourseController {
      * @author 宁舒意
      * @date 8:22 2024/5/27
      * @param chapterList 章节集合
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @PutMapping("/chapter")
     public BaseResult addChapters(@RequestBody List<Chapter> chapterList){
@@ -137,7 +137,7 @@ public class CourseController {
      * @author 宁舒意
      * @date 8:23 2024/5/27
      * @param chapterList  章节集合
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @PutMapping("/chapter/update")
     public BaseResult putChapters(@RequestBody List<Chapter> chapterList){
@@ -153,7 +153,7 @@ public class CourseController {
      * @author 宁舒意
      * @date 19:27 2024/5/19
      * @param chapterId 章节id
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @DeleteMapping("/chapter/{chapterId}")
     public BaseResult deleteChapter(@PathVariable Integer chapterId){
@@ -168,7 +168,7 @@ public class CourseController {
      * @date 11:23 2024/5/17
      * @param studentId 学生id
      * @param courseId 课程id
-     * @return com.nsy.model.BaseResult<com.nsy.model.vo.StudyRecordVO>
+     * @return com.nsy.BaseResult<com.nsy.model.vo.StudyRecordVO>
      **/
     @GetMapping("/study-record")
     public BaseResult<StudyRecordVO> studyRecord(@RequestParam int studentId, @RequestParam int courseId){

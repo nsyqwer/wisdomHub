@@ -1,13 +1,10 @@
 package com.nsy;
 
-import com.nsy.model.BaseResult;
-import com.nsy.model.vo.UserInfoVO;
+import com.nsy.vo.UserInfoVO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Base64;
 
 /**
  * @className: LoginController
@@ -24,7 +21,4 @@ public class LoginController {
         UserInfoVO userInfoVO =new UserInfoVO();
         return new BaseResult<>(200,"登录成功",userInfoVO);
     }
-
-
-
 }

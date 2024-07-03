@@ -1,7 +1,7 @@
 package com.nsy.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.nsy.model.pojo.Chapter;
+import com.nsy.pojo.Chapter;
 import com.nsy.service.ChapterService;
 import com.nsy.mapper.ChapterMapper;
 import org.springframework.stereotype.Service;

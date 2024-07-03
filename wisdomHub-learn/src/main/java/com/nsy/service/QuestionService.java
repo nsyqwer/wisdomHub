@@ -1,7 +1,7 @@
 package com.nsy.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.nsy.model.pojo.Question;
+import com.nsy.pojo.Question;
 
 /**
 * @author 宁舒意

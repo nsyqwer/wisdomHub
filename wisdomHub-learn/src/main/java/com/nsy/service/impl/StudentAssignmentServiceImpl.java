@@ -1,7 +1,7 @@
 package com.nsy.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.nsy.model.pojo.StudentAssignment;
+import com.nsy.pojo.StudentAssignment;
 import com.nsy.service.StudentAssignmentService;
 import com.nsy.mapper.StudentAssignmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;

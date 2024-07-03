@@ -1,8 +1,8 @@
 package com.nsy.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.nsy.model.dto.AssignmentQuestionDTO;
-import com.nsy.model.pojo.Assignment;
+import com.nsy.dto.AssignmentQuestionDTO;
+import com.nsy.pojo.Assignment;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

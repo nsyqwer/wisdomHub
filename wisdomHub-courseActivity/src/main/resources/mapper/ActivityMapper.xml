@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nsy.mapper.ActivityMapper">
+
+    <resultMap id="BaseResultMap" type="com.nsy.pojo.Activity">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="courseId" column="course_id" jdbcType="INTEGER"/>
+            <result property="classId" column="class_id" jdbcType="INTEGER"/>
+            <result property="teacherId" column="teacher_id" jdbcType="INTEGER"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="beginTime" column="begin_time" jdbcType="TIMESTAMP"/>
+            <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="answer" column="answer" jdbcType="VARCHAR"/>
+            <result property="answerImage" column="answer_image" jdbcType="VARCHAR"/>
+            <result property="detectionImage" column="detection_image" jdbcType="VARCHAR"/>
+            <result property="activityType" column="activity_type" jdbcType="INTEGER"/>
+            <result property="students" column="students" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,course_id,class_id,
+        teacher_id,title,begin_time,
+        end_time,type,answer,
+        answer_image,detection_image,activity_type,
+        students
+    </sql>
+</mapper>

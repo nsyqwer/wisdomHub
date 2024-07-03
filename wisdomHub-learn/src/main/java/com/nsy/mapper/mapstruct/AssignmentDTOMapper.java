@@ -2,10 +2,10 @@ package com.nsy.mapper.mapstruct;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nsy.model.dto.AssignmentAddDTO;
-import com.nsy.model.dto.AssignmentPublishDTO;
-import com.nsy.model.dto.AssignmentQuestionDTO;
-import com.nsy.model.pojo.Assignment;
+import com.nsy.dto.AssignmentAddDTO;
+import com.nsy.dto.AssignmentPublishDTO;
+import com.nsy.dto.AssignmentQuestionDTO;
+import com.nsy.pojo.Assignment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

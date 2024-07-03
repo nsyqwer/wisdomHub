@@ -1,9 +1,9 @@
 package com.nsy.controller;
 
-import com.nsy.model.BaseResult;
-import com.nsy.model.pojo.Question;
-import com.nsy.model.vo.MistakeDetailVO;
-import com.nsy.model.vo.MistakeVo;
+import com.nsy.BaseResult;
+import com.nsy.pojo.Question;
+import com.nsy.vo.MistakeDetailVO;
+import com.nsy.vo.MistakeVo;
 import com.nsy.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ public class QuestionController {
      * @author 宁舒意
      * @date 8:32 2024/5/27
      * @param courseId 课程id
-     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.pojo.Question>>
+     * @return com.nsy.BaseResult<java.util.List<com.nsy.model.pojo.Question>>
      **/
     @GetMapping("/all/{courseId}")
     public BaseResult<List<Question>> allQuestion(@PathVariable int courseId){
@@ -45,7 +45,7 @@ public class QuestionController {
      * @author 宁舒意
      * @date 19:24 2024/5/19
      * @param questions List<Question> questions，泛型为Question的集合
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @PutMapping("")
     public BaseResult questions(@RequestBody List<Question> questions){
@@ -61,7 +61,7 @@ public class QuestionController {
      * @author 宁舒意
      * @date 19:24 2024/5/19
      * @param question  题目实体
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @PutMapping("/mix-up")
     public BaseResult questions(@RequestBody Question question){
@@ -75,7 +75,7 @@ public class QuestionController {
      * @author 宁舒意
      * @date 19:25 2024/5/19
      * @param questionId 题目id
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @DeleteMapping("/{questionId}")
     public BaseResult question(@PathVariable int questionId){
@@ -90,7 +90,7 @@ public class QuestionController {
      * @author 宁舒意
      * @date 19:25 2024/5/19
      * @param questionId 题目id
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @GetMapping("/{questionId}")
     public BaseResult getQuestion(@PathVariable Integer questionId){
@@ -105,7 +105,7 @@ public class QuestionController {
      * @date 11:33 2024/5/17
      * @param studentId 学生id
      * @param courseId  课程id
-     * @return com.nsy.model.BaseResult<com.nsy.model.vo.MistakeVo>
+     * @return com.nsy.BaseResult<com.nsy.model.vo.MistakeVo>
      **/
     @GetMapping("/mistakes")
     public BaseResult<List<MistakeVo>> mistakes(@RequestParam int studentId, @RequestParam int courseId){
@@ -119,7 +119,7 @@ public class QuestionController {
      * @author 宁舒意
      * @date 0:08 2024/5/26
      * @param studentId 学生id
-     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.vo.MistakeVo>>
+     * @return com.nsy.BaseResult<java.util.List<com.nsy.model.vo.MistakeVo>>
      **/
     @GetMapping("/mistakes-all")
     public BaseResult<List<MistakeVo>> mistakeAll(@RequestParam int studentId){
@@ -134,7 +134,7 @@ public class QuestionController {
      * @author 宁舒意
      * @date 15:49 2024/5/17
      * @param mistakeId 错题id
-     * @return com.nsy.model.BaseResult<com.nsy.model.vo.MistakeDetailVO>
+     * @return com.nsy.BaseResult<com.nsy.model.vo.MistakeDetailVO>
      **/
     @GetMapping("/mistake-detail/{mistakeId}")
     public BaseResult<MistakeDetailVO> mistakeDetail(@PathVariable int mistakeId){

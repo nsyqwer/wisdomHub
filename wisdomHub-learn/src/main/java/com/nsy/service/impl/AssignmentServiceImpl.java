@@ -3,13 +3,12 @@ package com.nsy.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nsy.mapper.AssignmentMapper;
-import com.nsy.model.dto.AssignmentQuestionDTO;
-import com.nsy.model.pojo.Assignment;
+import com.nsy.dto.AssignmentQuestionDTO;
+import com.nsy.pojo.Assignment;
 import com.nsy.service.AssignmentService;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 

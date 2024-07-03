@@ -21,6 +21,12 @@
             <artifactId>wisdomHub-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.32</version> <!-- 版本号可能需要根据最新的稳定版本进行更新 -->
+        </dependency>
     </dependencies>
 
     <build>

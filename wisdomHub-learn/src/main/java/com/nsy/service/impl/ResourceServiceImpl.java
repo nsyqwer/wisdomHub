@@ -1,7 +1,7 @@
 package com.nsy.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.nsy.model.pojo.Resource;
+import com.nsy.pojo.Resource;
 import com.nsy.service.ResourceService;
 import com.nsy.mapper.ResourceMapper;
 import org.springframework.stereotype.Service;

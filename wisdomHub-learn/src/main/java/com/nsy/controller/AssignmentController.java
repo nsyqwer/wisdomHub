@@ -2,13 +2,14 @@ package com.nsy.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.nsy.dto.*;
 import com.nsy.mapper.mapstruct.AssignmentDTOMapper;
-import com.nsy.model.BaseResult;
-import com.nsy.model.dto.*;
-import com.nsy.model.pojo.Assignment;
-import com.nsy.model.pojo.Course;
-import com.nsy.model.pojo.StudentAssignment;
-import com.nsy.model.vo.MyAssignmentVO;
+import com.nsy.BaseResult;
+import com.nsy.dto.*;
+import com.nsy.pojo.Assignment;
+import com.nsy.pojo.Course;
+import com.nsy.pojo.StudentAssignment;
+import com.nsy.vo.MyAssignmentVO;
 import com.nsy.service.AssignmentService;
 import com.nsy.service.CourseService;
 import com.nsy.service.StudentAssignmentService;
@@ -47,7 +48,7 @@ public class AssignmentController {
      * @param studentId 学生id
      * @param courseId 课程id
      * @param operation 操作id，0表示查询所有，1表示查询已完成的，2表示查询未完成的
-     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.vo.MyAssignmentVO>>
+     * @return com.nsy.BaseResult<java.util.List<com.nsy.model.vo.MyAssignmentVO>>
      **/
     @GetMapping("/assignments")
     public BaseResult<List<MyAssignmentVO>> assignments(@RequestParam int studentId, @RequestParam int courseId, @RequestParam int operation){
@@ -67,7 +68,7 @@ public class AssignmentController {
      * @date 23:32 2024/6/3
      * @param studentId 学生id
      * @param assignmentId 作业id
-     * @return com.nsy.model.BaseResult<com.nsy.model.pojo.StudentAssignment>
+     * @return com.nsy.BaseResult<com.nsy.model.pojo.StudentAssignment>
      **/
     @GetMapping("/assignment/{studentId}/{assignmentId}")
     public BaseResult<StudentAssignment> assignmentById(@PathVariable int studentId,@PathVariable int assignmentId){
@@ -83,7 +84,7 @@ public class AssignmentController {
      * @author 宁舒意
      * @date 21:09 2024/5/16
      * @param studentAssignmentDTO
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @PutMapping("/assignment")
     public BaseResult assignment(@RequestBody StudentAssignmentDTO studentAssignmentDTO){
@@ -107,7 +108,7 @@ public class AssignmentController {
      * @author 宁舒意
      * @date 21:45 2024/6/3
      * @param assignmentAddDTO
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @PutMapping("")
     public BaseResult assignment(@RequestBody AssignmentAddDTO assignmentAddDTO) throws JsonProcessingException {
@@ -136,7 +137,7 @@ public class AssignmentController {
      * @author 宁舒意
      * @date 23:27 2024/6/3
      * @param assignmentPublishDTO
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @PutMapping("/publish")
     public BaseResult publishAssignment(@RequestBody AssignmentPublishDTO assignmentPublishDTO){
@@ -169,7 +170,7 @@ public class AssignmentController {
      * @author 宁舒意
      * @date 19:28 2024/5/19
      * @param assignmentId 作业id
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @DeleteMapping("/{assignmentId}")
     public BaseResult assignment(@PathVariable Integer assignmentId){
@@ -183,7 +184,7 @@ public class AssignmentController {
      * @date 19:28 2024/5/19
      * @param assignmentId 作业id
      * @param state 状态
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @PutMapping("/state")
     public BaseResult assignmentState(@RequestParam Integer assignmentId, @RequestParam Integer state){
@@ -200,7 +201,7 @@ public class AssignmentController {
      * @author 宁舒意
      * @date 21:13 2024/6/4
      * @param assignmentCorrectDTO
-     * @return com.nsy.model.BaseResult
+     * @return com.nsy.BaseResult
      **/
     @PutMapping("/correct")
     public BaseResult correctAssignment(@RequestBody AssignmentCorrectDTO assignmentCorrectDTO) throws IOException {

@@ -1,0 +1,26 @@
+package com.nsy.mapper;
+
+import com.nsy.pojo.Activity;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.nsy.vo.ActivityTypeVo;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
+
+/**
+* @author 86155
+* @description 针对表【activity(活动)】的数据库操作Mapper
+* @createDate 2024-06-13 19:49:07
+* @Entity com.nsy.pojo.Activity
+*/
+@Mapper
+public interface ActivityMapper extends BaseMapper<Activity> {
+
+    @Select("select id, activity_type from activity where course_id = #{courseId} and class_id = #{classId}")
+    List<ActivityTypeVo> getByAllType(Integer courseId, Integer classId);
+}
+
+
+
+
