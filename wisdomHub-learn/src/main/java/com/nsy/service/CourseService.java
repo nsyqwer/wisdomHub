@@ -21,4 +21,6 @@ public interface CourseService extends IService<Course> {
      * @return java.util.List<com.nsy.model.pojo.Course>
     **/
     List<Course> listByTeacherId(Integer teacherId);
+
+    List<Course> listByStudentId(int studentId);
 }

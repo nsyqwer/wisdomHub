@@ -24,7 +24,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
         return courseMapper.listByTeacherId(teacherId);
     }
 
-
+    @Override
+    public List<Course> listByStudentId(int studentId) {
+        return courseMapper.listByStudentId(studentId);
+    }
 }
 
 

@@ -2,22 +2,24 @@ package com.nsy.mapper.mapstruct;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nsy.constant.StudentAssignmentEnum;
 import com.nsy.model.dto.AssignmentAddDTO;
 import com.nsy.model.dto.AssignmentPublishDTO;
 import com.nsy.model.dto.AssignmentQuestionDTO;
 import com.nsy.model.pojo.Assignment;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
+import com.nsy.model.pojo.StudentAssignment;
+import com.nsy.model.vo.MyAssignmentVO;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Mapper
 public interface AssignmentDTOMapper {
     AssignmentDTOMapper INSTANCE = Mappers.getMapper(AssignmentDTOMapper.class);
-    //  Chapter toChapter(ChapterDetailDTO chapterAddDTO);
+
 // 添加一个方法来将 List<AssignmentQuestionDTO> 转换为 String
     @Named("mapContent")
     default String mapContent(List<AssignmentQuestionDTO> content) throws JsonProcessingException {
@@ -25,12 +27,31 @@ public interface AssignmentDTOMapper {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(content);
     }
+
+
+    /**
+     * 将状态号Code转化成枚举类里面的Message
+     * @author 宁舒意
+     * @date 21:55 2024/6/18
+     * @param state 状态（0，1，2）
+     * @return java.lang.String
+     */
+    @Named("mapstate")
+    default String mapState(Integer state) {
+        return Arrays.stream(StudentAssignmentEnum.values())
+                .filter(e -> Objects.equals(state, e.getCode()))
+                .findFirst()
+                .map(StudentAssignmentEnum::getMessage)
+                .orElse(null);
+    }
     @Mapping(source = "content", target = "content", qualifiedByName = "mapContent")
     void AddDTOtoAssignment(AssignmentAddDTO assignmentAddDTO, @MappingTarget Assignment assignment) throws JsonProcessingException;
 
     void PublishDTOtoAssignment(AssignmentPublishDTO assignmentPublishDTO, @MappingTarget Assignment assignment);
 
 
-    // 假设 Assignment 类中有一个名为 setContent 的方法来设置 content 属性
+    @Mapping(source = "state",target = "state",qualifiedByName = "mapstate")
+    void SAToMAList(List<StudentAssignment> studentAssignmentList,@MappingTarget List<MyAssignmentVO> myAssignmentVOList);
+
 
 }

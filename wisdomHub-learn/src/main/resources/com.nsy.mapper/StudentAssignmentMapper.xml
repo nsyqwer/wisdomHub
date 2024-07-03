@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nsy.mapper.StudentAssignmentMapper">
+<!--    <select id="listAll" resultType="com.nsy.model.vo.MyAssignmentVO">-->
+<!--        select * from student_assignment-->
+<!--        join assignment on student_assignment.assignment_id = assignment.id-->
+<!--        where student_id =#{studentId}-->
+<!--        and assignment.course_id  =#{courseId}-->
+<!--    </select>-->
+</mapper>

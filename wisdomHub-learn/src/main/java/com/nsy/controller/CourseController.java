@@ -1,5 +1,6 @@
 package com.nsy.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.nsy.model.BaseResult;
 import com.nsy.model.pojo.Chapter;
 import com.nsy.model.pojo.Course;
@@ -38,7 +39,7 @@ public class CourseController {
      **/
     @GetMapping("/courses/{studentId}")
     public BaseResult<List<Course>> coursesByStudentId(@PathVariable int studentId){
-        List<Course> courseList = new ArrayList<>();
+        List<Course> courseList = courseService.listByStudentId(studentId);
         return new BaseResult(200,"获取我的课程成功",courseList);
     }
 
@@ -96,7 +97,8 @@ public class CourseController {
      **/
     @GetMapping("/chapters/{courseId}")
     public BaseResult<List<Chapter>> chaptersByCourseId(@PathVariable int courseId){
-        List<Chapter> chapterList=new ArrayList<>();
+        List<Chapter> chapterList=chapterService.list(new QueryWrapper<Chapter>()
+                .eq("course_id",courseId));
         return new BaseResult(200,"获取课程章节任务点目录成功",chapterList);
     }
 
@@ -142,7 +144,12 @@ public class CourseController {
     @PutMapping("/chapter/update")
     public BaseResult putChapters(@RequestBody List<Chapter> chapterList){
         for (Chapter chapter : chapterList) {
-            chapterService.updateById(chapter);
+            Chapter existingChapter = chapterService.getById(chapter.getId()); // 假设有获取章节的方法
+            if (existingChapter == null) {
+                chapterService.save(chapter); // 插入章节
+            } else {
+                chapterService.updateById(chapter); // 更新章节
+            }
         }
         return new BaseResult<>(200,"修改章节成功");
     }
@@ -173,6 +180,7 @@ public class CourseController {
     @GetMapping("/study-record")
     public BaseResult<StudyRecordVO> studyRecord(@RequestParam int studentId, @RequestParam int courseId){
         StudyRecordVO studyRecordVO =new StudyRecordVO();
+
         return new BaseResult(200,"获取学习记录成功",studyRecordVO);
     }
 

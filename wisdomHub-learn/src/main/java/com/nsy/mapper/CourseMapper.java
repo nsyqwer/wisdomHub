@@ -29,6 +29,12 @@ public interface CourseMapper extends BaseMapper<Course> {
             "where teacher_id =#{teacherId})")
     List<Course> listByTeacherId(Integer teacherId);
 
+    @Select("select * from course " +
+            "where id in " +
+            "(select course_id from student_course " +
+            "where student_id =#{studentId})")
+    List<Course> listByStudentId(Integer studentId);
+
 }
 
 

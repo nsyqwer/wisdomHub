@@ -1,9 +1,12 @@
 package com.nsy.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.nsy.model.BaseResult;
+import com.nsy.model.pojo.Mistake;
 import com.nsy.model.pojo.Question;
 import com.nsy.model.vo.MistakeDetailVO;
 import com.nsy.model.vo.MistakeVo;
+import com.nsy.service.MistakeService;
 import com.nsy.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +29,9 @@ public class QuestionController {
     @Autowired
     private QuestionService questionService;
 
+    @Autowired
+    private MistakeService mistakeService;
+
     /**
      * 教师：查看该课程所有题目
      * @author 宁舒意
@@ -35,7 +41,8 @@ public class QuestionController {
      **/
     @GetMapping("/all/{courseId}")
     public BaseResult<List<Question>> allQuestion(@PathVariable int courseId){
-        List<Question> questionList =new ArrayList<>();
+        List<Question> questionList =questionService.list(new QueryWrapper<Question>()
+                .eq("course_id",courseId));
         return new BaseResult<>(200,"获取课程所有题目",questionList);
     }
 
@@ -109,7 +116,7 @@ public class QuestionController {
      **/
     @GetMapping("/mistakes")
     public BaseResult<List<MistakeVo>> mistakes(@RequestParam int studentId, @RequestParam int courseId){
-        List<MistakeVo> mistakeVoList = new ArrayList<>();
+        List<MistakeVo> mistakeVoList = mistakeService.listBySidCid(studentId,courseId);
         return new BaseResult(200,"获取该课程错题集成功",mistakeVoList);
     }
 
@@ -123,7 +130,7 @@ public class QuestionController {
      **/
     @GetMapping("/mistakes-all")
     public BaseResult<List<MistakeVo>> mistakeAll(@RequestParam int studentId){
-        List<MistakeVo> mistakeVoList = new ArrayList<>();
+        List<MistakeVo> mistakeVoList = mistakeService.listBySid(studentId);
         return new BaseResult(200,"获取所有课程错题集成功",mistakeVoList);
     }
 
@@ -138,7 +145,7 @@ public class QuestionController {
      **/
     @GetMapping("/mistake-detail/{mistakeId}")
     public BaseResult<MistakeDetailVO> mistakeDetail(@PathVariable int mistakeId){
-        MistakeDetailVO mistakeDetailVO =new MistakeDetailVO();
+        MistakeDetailVO mistakeDetailVO =mistakeService.getDetail(mistakeId);
         return new BaseResult(200,"获取错题详情成功",mistakeDetailVO);
     }
 
