@@ -110,6 +110,7 @@ public class AssignmentController {
     //添加作业，删除作业，编辑作业，批改学生作业
     /**
      * 教师：添加作业,添加考试
+     * assignmentId(传了id就是编辑，没传就是新增)
      * @author 宁舒意
      * @date 21:45 2024/6/3
      * @param assignmentAddDTO
@@ -119,6 +120,10 @@ public class AssignmentController {
     public BaseResult assignment(@RequestBody AssignmentAddDTO assignmentAddDTO) throws JsonProcessingException {
         //state设置为0表示草稿
         Assignment assignment =new Assignment();
+        if (assignmentAddDTO.getAssignmentId() != null) {
+            //表示编辑
+         assignment =assignmentService.getById(assignmentAddDTO.getAssignmentId());
+        }
         AssignmentDTOMapper.INSTANCE.AddDTOtoAssignment(assignmentAddDTO,assignment);
 
         assignment.setState(0);
@@ -131,7 +136,8 @@ public class AssignmentController {
         }
         assignment.setScore(totalScore);
         assignmentService.save(assignment);
-        return new BaseResult(200,"添加作业或者考试成功");
+        System.out.println("这"+assignment);
+        return new BaseResult(200,"添加或编辑作业考试成功",assignment.getId());
     }
 
     /**
