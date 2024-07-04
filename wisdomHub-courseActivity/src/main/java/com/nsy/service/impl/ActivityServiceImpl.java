@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nsy.BaseResult;
-import com.nsy.dto.StudentSiginDto;
 import com.nsy.mapper.StudentActivityMapper;
 import com.nsy.mapper.StudentMapper;
 import com.nsy.pojo.Activity;
@@ -13,11 +11,11 @@ import com.nsy.pojo.Student;
 import com.nsy.pojo.StudentActivity;
 import com.nsy.service.ActivityService;
 import com.nsy.mapper.ActivityMapper;
-import com.nsy.util.Time;
-import com.nsy.util.xunfei.WebFaceDetect;
+import com.nsy.util.xunfei.face.WebFaceDetect;
 import com.nsy.vo.ActivityTypeVo;
 import com.nsy.vo.ActivityVo;
 import com.nsy.vo.StudentSiginVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +28,7 @@ import java.util.List;
 * @createDate 2024-06-13 19:49:07
 */
 @Service
+@Slf4j
 public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity>
     implements ActivityService{
 
@@ -50,30 +49,37 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity>
     @Override
     public void add(Activity activity) throws Exception {
         if(activity.getActivityType() == 0) {
-            activityMapper.insert(activity);
             List<Student> students = studentMapper.selectByClassId(activity.getClassId());
+            System.out.println(students);
             if (activity.getType() == 0) { // 智能考勤
                 List<Student> noReachStudents = WebFaceDetect.getNoReachStudents(students, activity.getAnswerImage());
+                System.out.println("检测后的图片：" + WebFaceDetect.detection_image);
+                activity.setDetectionImage(WebFaceDetect.detection_image);
 
                 students.removeAll(noReachStudents);
 
-                String newTime = Time.getNewTime();
+                System.out.println("未到学生：" + noReachStudents);
+                System.out.println("已到达学生：" + students);
 
                 for (Student student : students) {
                     StudentActivity studentActivity = new StudentActivity(null, activity.getId(), student.getId(), activity.getBeginTime(), student.getName(), "已签");
                     studentActivityMapper.insert(studentActivity);
                 }
                 for(Student student : noReachStudents){
-                    StudentActivity studentActivity = new StudentActivity(null, activity.getId(), student.getId(), activity.getBeginTime(), student.getName(), "");
+                    StudentActivity studentActivity = new StudentActivity(null, activity.getId(), student.getId(), activity.getBeginTime(), student.getName(), "缺勤");
                     studentActivityMapper.insert(studentActivity);
                 }
             }
             else{
+                //对所有学生添加该签到活动
+                log.info("添加签到活动");
                 for(Student student : students){
                     StudentActivity studentActivity = new StudentActivity(null, activity.getId(), student.getId(), activity.getBeginTime(), student.getName(), "");
+                    System.out.println(studentActivity);
                     studentActivityMapper.insert(studentActivity);
                 }
             }
+            activityMapper.insert(activity);
         }
         else{
             //添加空集合进入选人活动中

@@ -1,4 +1,4 @@
-package com.nsy.util.xunfei.util;
+package com.nsy.util.xunfei.face.util;
 
 import java.io.*;
 import java.net.HttpURLConnection;

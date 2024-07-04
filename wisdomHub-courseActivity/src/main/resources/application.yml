@@ -13,3 +13,12 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+
+# OSS Configuration
+aliyun:
+  oss:
+    access-key: LTAI5tRhLi2QTrErLgi9xG3K
+    secret-key: HkWmmg0a5tWzHuOS1QoJME6Xt3Xbj4
+    endpoint: oss-cn-zhangjiakou.aliyuncs.com
+    bucket: yuejuanpt
+    market-host: "https://${aliyun.oss.bucket}.${aliyun.oss.endpoint}"

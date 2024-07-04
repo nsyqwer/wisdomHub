@@ -1,23 +1,24 @@
-package com.nsy.util.xunfei;
+package com.nsy.util.xunfei.face;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsy.pojo.Student;
-import com.nsy.util.xunfei.util.FileUtil;
-import com.nsy.util.xunfei.util.HttpUtil;
-import com.nsy.util.xunfei.vo.RenLianDuiBiView;
+import com.nsy.util.OSSUtils;
+import com.nsy.util.xunfei.face.util.FileUtil;
+import com.nsy.util.xunfei.face.util.HttpUtil;
+import com.nsy.util.xunfei.face.vo.RenLianDuiBiView;
+import com.nsy.vo.FaceImageVo;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -38,7 +39,7 @@ import java.util.*;
  * @author main.com.iflytek
  */
 
-
+@Slf4j
 public class WebFaceDetect {
 
     static List<Student> students = new ArrayList<>();
@@ -65,28 +66,129 @@ public class WebFaceDetect {
         }
     }
 
+    //获取有头像的学生集合
+    public static List<Student> getStudentFaces(List<Student> studentList){
+        List<Student> studentNoFaces = new ArrayList<>();
+        for(Student student : studentList){
+            if(student.getFaceImage() == null || student.getFaceImage().isEmpty()){
+                studentNoFaces.add(student);
+            }
+        }
+        for(Student student : studentNoFaces){
+            studentList.remove(student);
+        }
+        return studentList;
+    }
+
+    //获取框出头像的每个人的对应的图片
+    public static List<FaceImageVo> getFaceImageVos(List<Student> studentList, MultipartFile multipartFile) throws Exception {
+        List<FaceImageVo> faceImageVos = new ArrayList<>();
+
+        imagePath1 = OSSUtils.uploadFileToOOS(multipartFile);
+        students = getStudentFaces(studentList);
+
+        String text = getJsonText();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(text);
+
+        // 获取总的面部数量
+        int totalFaces = rootNode.get("face_num").asInt();
+
+        // 遍历所有面部数据
+        for (int i = 1; i <= totalFaces; i++) {
+            JsonNode faceNode = rootNode.path("face_" + i);
+            if (faceNode.isMissingNode()) {
+                System.out.println("Face " + i + " data not found.");
+                continue;
+            }
+
+            int height = faceNode.get("h").asInt();
+            double score = faceNode.get("score").asDouble();
+            int width = faceNode.get("w").asInt();
+            int x = faceNode.get("x").asInt();
+            int y = faceNode.get("y").asInt();
+
+            Path path = Paths.get("D:/");
+            URL url = new URL(imagePath1);
+            InputStream is = url.openStream();
+            BufferedImage image = ImageIO.read(is);
+            // 获取Graphics2D对象，用于绘图
+            Graphics2D g2d = image.createGraphics();
+
+            // 设置为红色粗线条
+            g2d.setColor(Color.RED);
+            BasicStroke thickStroke = new BasicStroke(4.0f);
+            g2d.setStroke(thickStroke);
+            markImage(g2d, x, y, height, width);
+
+            String savePath = OSSUtils.uploadImageToOOS(image, i + ".jpg");
+
+            //进行切割出只有头像的部分
+            BufferedImage croppedImage = image.getSubimage(x,y,width,height);
+            Path outputImagePath = path.resolve("image.jpg");
+            ImageIO.write(croppedImage, "jpg", outputImagePath.toFile());
+
+            //获取该人脸对应的班级中学生姓名以及id
+            Student student = getStudentByFace(outputImagePath.toString());
+            if(student != null) {
+                faceImageVos.add(new FaceImageVo(savePath, student.getId(), student.getName()));
+            }
+        }
+
+        return faceImageVos;
+    }
+
+    //通过照片获取班级中对应的学生
+    private static Student getStudentByFace(String ren_liang) throws Exception {
+        Student student_1 = null;
+        for(Student student : students){
+            if(student.getFaceImage() == null || student.getFaceImage().isEmpty())
+                continue;
+            Double score = get_ren_liang_dui_bi(student.getFaceImage(), ren_liang);
+            if(score >= 0.9){
+                student_1 = student;
+                break;
+            }
+        }
+        if(student_1 != null) {
+            students.remove(student_1);
+        }
+        return student_1;
+    }
+
+
+    //获取不在教室的学生集合
     public static List<Student> getNoReachStudents(List<Student> studentList, String image) throws Exception {
         imagePath1 = image;
-        students = studentList;
+        students = new ArrayList<>(studentList);
 
+        System.out.println(students);
+
+        System.out.println("人脸检测及属性分析结果(text)base64解码后：");
+
+        String text = getJsonText();
+
+        System.out.println(text);
+
+        getImage(text);
+
+        System.out.println("未到达学生");
+        System.out.println(students);
+
+        return students;
+    }
+
+    //获取检测后的json数据
+    private static String getJsonText() throws Exception {
         WebFaceDetect demo = new WebFaceDetect();
         ResponseData respData = demo.faceContrast(imagePath1);
         if (respData!=null && respData.getPayLoad().getFace_detect_result() != null) {
             String textBase64 = respData.getPayLoad().getFace_detect_result().getText();
             String text = new String(Base64.getDecoder().decode(textBase64));
-            System.out.println("人脸检测及属性分析结果(text)base64解码后：");
-
-            System.out.println(text);
-
-            getImage(text);
-
-            System.out.println("未到学生名单");
-            for(Student student : students){
-                System.out.println(student);
-            }
-            return students;
+            return text;
         }
-        System.out.println("出现异常，未进行识别考勤图片");
+        log.error("出现异常，未进行检测image图片");
         return null;
     }
 
@@ -105,13 +207,13 @@ public class WebFaceDetect {
         return null;
     }
 
-    // 获取绘制人脸后的突破
+    public static String detection_image;
+    // 获取绘制人脸后的图片
     public static void getImage(String text) throws Exception {
-
-        File file = new File(imagePath1);
-        Path path = get_wen_jian(imagePath1);
-
-        BufferedImage image = ImageIO.read(file);
+        Path path = Paths.get("D:");
+        URL url = new URL(imagePath1);
+        InputStream is = url.openStream();
+        BufferedImage image = ImageIO.read(is);
 
         // 获取Graphics2D对象，用于绘图
         Graphics2D g2d = image.createGraphics();
@@ -123,36 +225,19 @@ public class WebFaceDetect {
 
         getWeiZhiMark(g2d, text, image, path);
 
-        //进行人脸对比确定哪些人在教室
-        for(String ren_liang : ren_liangs){
-            Student student_1 = null;
-            for(Student student : students){
-                Double score = get_ren_liang_dui_bi(student.getFaceImage(), ren_liang);
-                System.out.println(score + " " + student.getFaceImage() + " " + ren_liang);
-                if(score >= 0.9){
-                    student_1 = student;
-                    break;
-                }
-            }
-            if(student_1 != null) {
-                students.remove(student_1);
-            }
-        }
-
-        saveImage(image, file.getName());
-
+        detection_image = OSSUtils.uploadImageToOOS(image, ".jpg");
     }
 
     //存储图片
-    private static void saveImage(BufferedImage image, String name) throws IOException {
+    private static String saveImage(BufferedImage image, String name) throws IOException {
         String path = "src/main/java/main/com/iflytek/markImage/" + name;
         File outputfile = new File(path);
         ImageIO.write(image, "PNG", outputfile);
-        System.out.println("矩形已绘制并保存为 " + path);
+        return path;
     }
 
     //获取json数据中的人脸位置信息并进行绘制图片
-    private static void getWeiZhiMark(Graphics2D g2d, String text, BufferedImage image, Path path) throws IOException {
+    private static void getWeiZhiMark(Graphics2D g2d, String text, BufferedImage image, Path path) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(text);
 
@@ -174,11 +259,11 @@ public class WebFaceDetect {
             int y = faceNode.get("y").asInt();
 
             BufferedImage croppedImage = image.getSubimage(x,y,width,height);
-            Path outputImagePath = path.resolve("image" + i + ".jpg");
-
-            ren_liangs.add(outputImagePath.toString());
+            Path outputImagePath = path.resolve("image.jpg");
 
             ImageIO.write(croppedImage, "jpg", outputImagePath.toFile());
+
+            getStudentByFace(outputImagePath.toString());
 
             markImage(g2d, x, y, height, width);
         }
@@ -186,8 +271,7 @@ public class WebFaceDetect {
 
     //获取两张图片人脸对比后的结果
     private static Double get_ren_liang_dui_bi(String image1, String image2) throws Exception {
-        long startTime = System.currentTimeMillis();
-        WebFaceCompare.ResponseData respData = demo.faceContrast(WebFaceCompare.Property.imagePath1, WebFaceCompare.Property.imagePath2);
+        WebFaceCompare.ResponseData respData = demo.faceContrast(image1, image2);
         if (respData!=null && respData.getPayLoad().getFaceCompareResult() != null) {
             String textBase64 = respData.getPayLoad().getFaceCompareResult().getText();
             String text = new String(Base64.getDecoder().decode(textBase64));
@@ -255,10 +339,24 @@ public class WebFaceDetect {
 
     //读取image
     private byte[] readImage(String imagePath) throws IOException {
-        InputStream is = new FileInputStream(imagePath);
-        byte[] imageByteArray1 = FileUtil.read(imagePath);
-        //return is.readAllBytes();
-        return imageByteArray1;
+        if(imagePath.contains("https")){
+            URL url = new URL(imagePath);
+            try (InputStream in = url.openStream()) {
+                ByteArrayOutputStream result = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = in.read(buffer)) != -1) {
+                    result.write(buffer, 0, length);
+                }
+                return result.toByteArray();
+            }
+        }
+        else {
+            InputStream is = new FileInputStream(imagePath);
+            byte[] imageByteArray1 = FileUtil.read(imagePath);
+            //return is.readAllBytes();
+            return imageByteArray1;
+        }
     }
 
     public ResponseData faceContrast(String imageFirstUrl) throws Exception {

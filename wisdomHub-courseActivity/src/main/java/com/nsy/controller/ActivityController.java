@@ -1,25 +1,24 @@
 package com.nsy.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nsy.BaseResult;
 import com.nsy.dto.StudentSiginDto;
 import com.nsy.dto.UpdateSiginDto;
 import com.nsy.pojo.Activity;
 import com.nsy.pojo.Student;
-import com.nsy.pojo.StudentActivity;
 import com.nsy.service.ActivityService;
 import com.nsy.service.StudentActivityService;
 import com.nsy.service.StudentService;
-import com.nsy.util.Time;
-import com.nsy.util.xunfei.WebFaceDetect;
+import com.nsy.util.OSSUtils;
+import com.nsy.util.xunfei.face.WebFaceDetect;
 import com.nsy.vo.ActivityTypeVo;
 import com.nsy.vo.ActivityVo;
+import com.nsy.vo.FaceImageVo;
 import com.nsy.vo.StudentSiginVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -169,5 +168,47 @@ public class ActivityController {
     @GetMapping("studentChooser")
     public BaseResult<ActivityVo> getStudentChooser(@RequestParam Integer activityId) throws JsonProcessingException {
         return new BaseResult<>(200, "学生获取选人活动情况", activityService.getActivityVoById(activityId));
+    }
+
+    /**
+     * 测试类用不了，这个用来测试的接口
+     * @author 文旅航
+     * @date 2024/7/3 16:47
+     * @return com.nsy.BaseResult
+    **/
+
+    @GetMapping("test")
+    public BaseResult get(@RequestParam MultipartFile image) throws Exception {
+        OSSUtils.uploadFileToOOS(image);
+        return new BaseResult(200, "测试成功");
+    }
+
+    /**
+     * 教师：获取班级照片中每个人框出头像的图片
+     * @author 文旅航
+     * @date 2024/7/3 23:19
+     * @param classId
+     * @param image
+     * @return com.nsy.BaseResult<java.util.List<com.nsy.vo.FaceImageVo>>
+    **/
+    @GetMapping("getFaceImageVos")
+    public BaseResult<List<FaceImageVo>> getFaceImageVos(@RequestParam Integer classId, @RequestParam MultipartFile image) throws Exception {
+        log.info("获取班级照片中每个人框出头像的图片");
+        List<Student> students = studentService.getByClassId(classId);
+        return new BaseResult<>(200, "获取成功", WebFaceDetect.getFaceImageVos(students, image));
+    }
+
+    /**
+     * 工具：上传图片获得图片地址
+     * @author 文旅航
+     * @date 2024/7/4 9:49
+     * @param image
+     * @return com.nsy.BaseResult<java.lang.String>
+    **/
+
+    @GetMapping("getImagePath")
+    public BaseResult<String> uploadImageFile(@RequestParam MultipartFile image){
+        log.info("上传图片");
+        return new BaseResult<>(200, "上传图片成功", OSSUtils.uploadFileToOOS(image));
     }
 }

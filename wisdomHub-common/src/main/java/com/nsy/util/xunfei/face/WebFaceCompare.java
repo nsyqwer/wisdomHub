@@ -1,14 +1,15 @@
-package com.nsy.util.xunfei;
+package com.nsy.util.xunfei.face;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.nsy.util.xunfei.util.FileUtil;
-import com.nsy.util.xunfei.util.HttpUtil;
-import com.nsy.util.xunfei.vo.RenLianDuiBiView;
+import com.nsy.util.xunfei.face.util.FileUtil;
+import com.nsy.util.xunfei.face.util.HttpUtil;
+import com.nsy.util.xunfei.face.vo.RenLianDuiBiView;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -99,10 +100,25 @@ public class WebFaceCompare {
 
     //读取image
     private byte[] readImage(String imagePath) throws IOException {
-        InputStream is = new FileInputStream(imagePath);
-        byte[] imageByteArray1 = FileUtil.read(imagePath);
-        //return is.readAllBytes();
-        return imageByteArray1;
+        System.out.println("这里的路径是：" + imagePath);
+        if(imagePath.contains("https")){
+            URL url = new URL(imagePath);
+            try (InputStream in = url.openStream()) {
+                ByteArrayOutputStream result = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = in.read(buffer)) != -1) {
+                    result.write(buffer, 0, length);
+                }
+                return result.toByteArray();
+            }
+        }
+        else {
+            InputStream is = new FileInputStream(imagePath);
+            byte[] imageByteArray1 = FileUtil.read(imagePath);
+            //return is.readAllBytes();
+            return imageByteArray1;
+        }
     }
 
     public ResponseData faceContrast(String imageFirstUrl, String imageSecondUrl) throws Exception {

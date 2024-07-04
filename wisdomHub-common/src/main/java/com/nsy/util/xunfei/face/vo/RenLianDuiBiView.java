@@ -1,4 +1,4 @@
-package com.nsy.util.xunfei.vo;
+package com.nsy.util.xunfei.face.vo;
 
 import lombok.Data;
 
