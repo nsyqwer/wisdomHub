@@ -32,7 +32,7 @@ public interface AssignmentService extends IService<Assignment> {
 
     String ListToJson(List<AssignmentQuestionDTO> assignmentQuestionDTOList) throws JsonProcessingException;
 
-    List<MyAssignmentVO> listToVO(int studentId, int courseId,  int operation,int type);
+    List<MyAssignmentVO> listToVO(int studentId, int courseId, int operation, int type);
 
     void publishAssignment(AssignmentPublishDTO assignmentPublishDTO) throws IOException;
 
