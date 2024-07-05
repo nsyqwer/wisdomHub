@@ -2,7 +2,7 @@ package com.nsy.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nsy.mapper.QuestionMapper;
-import com.nsy.pojo.Question;
+import com.nsy.model.pojo.Question;
 import com.nsy.service.QuestionService;
 import org.springframework.stereotype.Service;
 

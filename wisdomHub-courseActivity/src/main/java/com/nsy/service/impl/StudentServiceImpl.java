@@ -1,8 +1,7 @@
 package com.nsy.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.nsy.pojo.Student;
+import com.nsy.model.pojo.Student;
 import com.nsy.service.StudentService;
 import com.nsy.mapper.StudentMapper;
 import org.springframework.beans.factory.annotation.Autowired;

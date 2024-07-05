@@ -1,8 +1,8 @@
 package com.nsy.mapper;
 
-import com.nsy.pojo.Activity;
+import com.nsy.model.pojo.Activity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.nsy.vo.ActivityTypeVo;
+import com.nsy.model.vo.ActivityTypeVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 

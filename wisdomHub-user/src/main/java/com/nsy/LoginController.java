@@ -1,6 +1,7 @@
 package com.nsy;
 
-import com.nsy.vo.UserInfoVO;
+import com.nsy.model.dto.BaseResult;
+import com.nsy.model.vo.UserInfoVO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

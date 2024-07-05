@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.nsy.pojo.Student;
+import com.nsy.model.pojo.Student;
 import com.nsy.util.OSSUtils;
 import com.nsy.util.xunfei.face.util.FileUtil;
 import com.nsy.util.xunfei.face.util.HttpUtil;
 import com.nsy.util.xunfei.face.vo.RenLianDuiBiView;
-import com.nsy.vo.FaceImageVo;
+import com.nsy.model.vo.FaceImageVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 

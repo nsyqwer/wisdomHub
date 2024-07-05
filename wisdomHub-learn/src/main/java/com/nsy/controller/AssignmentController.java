@@ -4,8 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nsy.mapper.mapstruct.AssignmentDTOMapper;
-import com.nsy.model.BaseResult;
+
 import com.nsy.model.dto.*;
+import com.nsy.model.dto.TeaCherAssignmentDTO;
 import com.nsy.model.pojo.Assignment;
 import com.nsy.model.pojo.Class;
 import com.nsy.model.pojo.Course;

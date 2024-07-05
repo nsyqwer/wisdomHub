@@ -1,7 +1,7 @@
 package com.nsy.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.nsy.pojo.Course;
+import com.nsy.model.pojo.Course;
 
 import java.util.List;
 

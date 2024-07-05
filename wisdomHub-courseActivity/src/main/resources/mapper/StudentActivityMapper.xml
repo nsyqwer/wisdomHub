@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nsy.mapper.StudentActivityMapper">
 
-    <resultMap id="BaseResultMap" type="com.nsy.pojo.StudentActivity">
+    <resultMap id="BaseResultMap" type="com.nsy.model.pojo.StudentActivity">
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="activityId" column="activity_id" jdbcType="INTEGER"/>
             <result property="studentId" column="student_id" jdbcType="INTEGER"/>

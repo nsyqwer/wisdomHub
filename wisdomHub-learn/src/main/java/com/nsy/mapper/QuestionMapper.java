@@ -1,6 +1,6 @@
 package com.nsy.mapper;
 
-import com.nsy.pojo.Question;
+import com.nsy.model.pojo.Question;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 

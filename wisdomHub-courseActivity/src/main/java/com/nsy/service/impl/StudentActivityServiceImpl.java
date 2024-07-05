@@ -1,9 +1,8 @@
 package com.nsy.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.nsy.dto.UpdateSiginDto;
-import com.nsy.pojo.StudentActivity;
+import com.nsy.model.dto.UpdateSiginDto;
+import com.nsy.model.pojo.StudentActivity;
 import com.nsy.service.StudentActivityService;
 import com.nsy.mapper.StudentActivityMapper;
 import com.nsy.util.Time;

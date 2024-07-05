@@ -1,6 +1,6 @@
 package com.nsy.service;
 
-import com.nsy.pojo.Chapter;
+import com.nsy.model.pojo.Chapter;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

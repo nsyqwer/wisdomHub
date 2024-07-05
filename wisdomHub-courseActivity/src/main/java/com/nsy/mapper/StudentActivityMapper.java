@@ -1,6 +1,6 @@
 package com.nsy.mapper;
 
-import com.nsy.pojo.StudentActivity;
+import com.nsy.model.pojo.StudentActivity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

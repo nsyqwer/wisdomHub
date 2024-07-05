@@ -1,11 +1,11 @@
 package com.nsy.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.nsy.pojo.Activity;
+import com.nsy.model.pojo.Activity;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.nsy.vo.ActivityTypeVo;
-import com.nsy.vo.ActivityVo;
-import com.nsy.vo.StudentSiginVo;
+import com.nsy.model.vo.ActivityTypeVo;
+import com.nsy.model.vo.ActivityVo;
+import com.nsy.model.vo.StudentSiginVo;
 
 import java.util.List;
 
