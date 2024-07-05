@@ -8,6 +8,7 @@ import com.nsy.constant.AssignmentTypeEnum;
 import com.nsy.constant.QueryAssignmentEnum;
 import com.nsy.constant.StudentAssignmentEnum;
 import com.nsy.mapper.AssignmentMapper;
+import com.nsy.mapper.ClassMapper;
 import com.nsy.mapper.StudentAssignmentMapper;
 import com.nsy.mapper.mapstruct.AssignmentDTOMapper;
 import com.nsy.model.dto.AssignmentPublishDTO;
@@ -20,6 +21,7 @@ import com.nsy.model.pojo.StudentAssignment;
 import com.nsy.model.vo.MyAssignmentVO;
 import com.nsy.model.vo.TeacherAssignVO;
 import com.nsy.service.AssignmentService;
+import com.nsy.service.ClassService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,9 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
 
     @Autowired
     private AssignmentMapper assignmentMapper;
+
+    @Autowired
+    private ClassMapper classMapper;
 
     @Override
     public List<AssignmentQuestionDTO> getQuestion(String contentJson) throws IOException {
@@ -88,8 +93,21 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
         {
             assignment.setExamTime(assignmentPublishDTO.getExamTime());
         }
-        //将作业状态改为1（进行中）
+
+        //根据id数组得到班级集合
+        List<Class> classList =new ArrayList<>();
+        for (Integer id : assignmentPublishDTO.getClassIdList()) {
+            Class c = classMapper.selectById(id);
+            classList.add(c);
+        }
+
+        //班级集合转换json
+        ObjectMapper objectMapper = new ObjectMapper();
+        String classListJson =objectMapper.writeValueAsString(classList);
+
+        //将作业状态改为1（进行中）,并且把发放的班级列表改成现在选择的
         assignment.setState(1);
+        assignment.setClassList(classListJson);
         assignmentMapper.updateById(assignment);
         //将每个学生都加入到作业中来
         String classIdsStr = String.join(",", assignmentPublishDTO.getClassIdList().stream().map(String::valueOf).toArray(String[]::new));
@@ -101,6 +119,7 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
         studentAssignment.setCourseId(assignment.getCourseId());
         studentAssignment.setTitle(assignment.getTitle());
         studentAssignment.setType(type);
+
         //查询到作业所属课程id
         //这里的content是assignmentQuestion的数组，发布的时候答案和答案解析不能传过去
         List<AssignmentQuestionDTO> assignmentQuestionDTOList = getQuestion(assignment.getContent());
