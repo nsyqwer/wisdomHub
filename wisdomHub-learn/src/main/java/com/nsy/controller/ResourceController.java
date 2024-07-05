@@ -1,7 +1,7 @@
 package com.nsy.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.nsy.model.dto.BaseResult;
+import com.nsy.model.BaseResult;
 import com.nsy.model.pojo.Resource;
 import com.nsy.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class ResourceController {
      * @author 宁舒意
      * @date 21:28 2024/5/16
      * @param courseId 课程id
-     * @return com.nsy.model.dto.BaseResult
+     * @return com.nsy.model.BaseResult
      **/
     @GetMapping("/{courseId}")
     public BaseResult<List<Resource>> resource(@PathVariable int courseId){

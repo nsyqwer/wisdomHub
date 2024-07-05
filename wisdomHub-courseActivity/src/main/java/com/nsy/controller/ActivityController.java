@@ -1,7 +1,7 @@
 package com.nsy.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.nsy.model.dto.BaseResult;
+import com.nsy.model.BaseResult;
 import com.nsy.model.dto.StudentSiginDto;
 import com.nsy.model.dto.UpdateSiginDto;
 import com.nsy.model.pojo.Activity;
@@ -41,7 +41,7 @@ public class ActivityController {
      * @author 文旅航
      * @date 23:33 2024/6/4
      * @param activity 签到的实体
-     * @return com.nsy.model.dto.BaseResult
+     * @return com.nsy.model.BaseResult
      **/
     @PutMapping("/add")
     public BaseResult addActivity(@RequestBody Activity activity) throws Exception {
@@ -54,7 +54,7 @@ public class ActivityController {
      * @author 文旅航
      * @date 0:32 2024/6/9
      * @param activityId
-     * @return com.nsy.model.dto.BaseResult
+     * @return com.nsy.model.BaseResult
      **/
 
     @GetMapping("/{activityId}")
@@ -69,7 +69,7 @@ public class ActivityController {
      * @date 2024/7/2 17:32
      * @param courseId
      * @param classId
-     * @return com.nsy.model.dto.BaseResult<java.util.List<com.nsy.vo.ActivityTypeVo>>
+     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.vo.ActivityTypeVo>>
     **/
     @GetMapping("allActivity")
     public BaseResult<List<ActivityTypeVo>> allActivity(@RequestParam Integer courseId, @RequestParam Integer classId){
@@ -81,7 +81,7 @@ public class ActivityController {
      * 教师：修改签到状态
      * @author 文旅航
      * @date 2024/7/2 19:48
-     * @return com.nsy.model.dto.BaseResult
+     * @return com.nsy.model.BaseResult
     **/
     @PostMapping("sigin")
     public BaseResult updateSigin(@RequestBody UpdateSiginDto updateSiginDto){
@@ -96,7 +96,7 @@ public class ActivityController {
      * @date 2024/7/2 22:03
      * @param activityId
      * @param studentId
-     * @return com.nsy.model.dto.BaseResult
+     * @return com.nsy.model.BaseResult
     **/
 
     @PutMapping("chooser")
@@ -110,7 +110,7 @@ public class ActivityController {
      * 教师：删除活动
      * @author 文旅航
      * @date 2024/7/2 19:51
-     * @return com.nsy.model.dto.BaseResult
+     * @return com.nsy.model.BaseResult
     **/
 
     @DeleteMapping("activity/{activityId}")
@@ -126,7 +126,7 @@ public class ActivityController {
      * @date 2024/7/3 11:01
      * @param activityId
      * @param studentId
-     * @return com.nsy.model.dto.BaseResult<com.nsy.vo.StudentSiginVo>
+     * @return com.nsy.model.BaseResult<com.nsy.vo.StudentSiginVo>
     **/
 
 
@@ -141,7 +141,7 @@ public class ActivityController {
      * 学生：进行签到
      * @author 文旅航
      * @date 2024/7/3 10:29
-     * @return com.nsy.model.dto.BaseResult
+     * @return com.nsy.model.BaseResult
     **/
 
     @PutMapping("studentSigin")
@@ -163,7 +163,7 @@ public class ActivityController {
      * @author 文旅航
      * @date 2024/7/3 10:17
      * @param activityId
-     * @return com.nsy.model.dto.BaseResult<com.nsy.vo.ActivityVo>
+     * @return com.nsy.model.BaseResult<com.nsy.vo.ActivityVo>
     **/
     @GetMapping("studentChooser")
     public BaseResult<ActivityVo> getStudentChooser(@RequestParam Integer activityId) throws JsonProcessingException {
@@ -174,7 +174,7 @@ public class ActivityController {
      * 测试类用不了，这个用来测试的接口
      * @author 文旅航
      * @date 2024/7/3 16:47
-     * @return com.nsy.model.dto.BaseResult
+     * @return com.nsy.model.BaseResult
     **/
 
     @GetMapping("test")
@@ -189,7 +189,7 @@ public class ActivityController {
      * @date 2024/7/3 23:19
      * @param classId
      * @param image
-     * @return com.nsy.model.dto.BaseResult<java.util.List<com.nsy.vo.FaceImageVo>>
+     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.vo.FaceImageVo>>
     **/
     @GetMapping("getFaceImageVos")
     public BaseResult<List<FaceImageVo>> getFaceImageVos(@RequestParam Integer classId, @RequestParam MultipartFile image) throws Exception {
@@ -203,7 +203,7 @@ public class ActivityController {
      * @author 文旅航
      * @date 2024/7/4 9:49
      * @param image
-     * @return com.nsy.model.dto.BaseResult<java.lang.String>
+     * @return com.nsy.model.BaseResult<java.lang.String>
     **/
 
     @GetMapping("getImagePath")

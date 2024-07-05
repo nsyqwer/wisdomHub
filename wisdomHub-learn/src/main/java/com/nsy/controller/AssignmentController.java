@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nsy.mapper.mapstruct.AssignmentDTOMapper;
 
+import com.nsy.model.BaseResult;
 import com.nsy.model.dto.*;
 import com.nsy.model.dto.TeaCherAssignmentDTO;
 import com.nsy.model.pojo.Assignment;
@@ -23,9 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @className: AssignmentController

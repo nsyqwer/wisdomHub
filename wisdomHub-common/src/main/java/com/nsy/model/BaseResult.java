@@ -1,4 +1,4 @@
-package com.nsy.model.dto;
+package com.nsy.model;
 
 import lombok.Data;
 
