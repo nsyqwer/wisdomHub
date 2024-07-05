@@ -1,5 +1,6 @@
 package com.nsy.model;
 
+
 import lombok.Data;
 
 /**

@@ -5,5 +5,5 @@ import com.nsy.model.pojo.Class;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface ClasssService extends IService<Class>  {
+public interface ClassService extends IService<Class>  {
 }

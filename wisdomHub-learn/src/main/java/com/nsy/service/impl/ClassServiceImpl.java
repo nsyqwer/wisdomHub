@@ -2,10 +2,9 @@ package com.nsy.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nsy.mapper.ClassMapper;
-import com.nsy.mapper.CourseMapper;
 import com.nsy.model.pojo.Class;
-import com.nsy.model.pojo.Course;
-import com.nsy.service.ClasssService;
+import com.nsy.service.ClassService;
+import org.springframework.stereotype.Service;
 
 /**
  * @className: ClassServiceImpl
@@ -13,6 +12,6 @@ import com.nsy.service.ClasssService;
  * @description: TODO
  * @date: 2024/7/5 11:37
  */
-
-public class ClassServiceImpl extends ServiceImpl<ClassMapper, Class> implements ClasssService {
+@Service
+public class ClassServiceImpl extends ServiceImpl<ClassMapper, Class> implements ClassService {
 }

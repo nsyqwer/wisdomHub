@@ -9,6 +9,7 @@ import com.nsy.model.dto.AssignmentPublishDTO;
 import com.nsy.model.dto.AssignmentQuestionDTO;
 import com.nsy.model.dto.TeaCherAssignmentDTO;
 import com.nsy.model.pojo.Assignment;
+import com.nsy.model.pojo.Class;
 import com.nsy.model.pojo.StudentAssignment;
 import com.nsy.model.vo.MyAssignmentVO;
 import com.nsy.model.vo.TeacherAssignVO;
@@ -58,15 +59,15 @@ public interface AssignmentDTOMapper {
 
 
 
-
     //对老师查看自己课程作业的接口
 
     @Named("mapClassList")
-    default List<TeacherAssignVO> mapContent(String classListJson) throws JsonProcessingException {
+    default List<Class> mapClassList(String classListJson) throws JsonProcessingException {
         // 使用 JSON 序列化将 List 转换为 JSON 字符串
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(classListJson, new TypeReference<List<TeacherAssignVO>>() {});
+        return objectMapper.readValue(classListJson, new TypeReference<List<Class>>() {});
     }
+
     @Mapping(source = "classList", target = "classList", qualifiedByName = "mapClassList")
     void assignPojoToVo(Assignment assignment, @MappingTarget TeacherAssignVO teacherAssignVO);
 

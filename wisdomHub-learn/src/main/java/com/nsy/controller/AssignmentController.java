@@ -15,7 +15,7 @@ import com.nsy.model.pojo.StudentAssignment;
 import com.nsy.model.vo.MyAssignmentVO;
 import com.nsy.model.vo.TeacherAssignVO;
 import com.nsy.service.AssignmentService;
-import com.nsy.service.ClasssService;
+import com.nsy.service.ClassService;
 import com.nsy.service.CourseService;
 import com.nsy.service.StudentAssignmentService;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ public class AssignmentController {
     StudentAssignmentService studentAssignmentService;
 
     @Autowired
-    private ClasssService classsService;
+    private ClassService classService;
 
     /**
      * 学生：查看所有作业，或者已完成作业，或者未完成作业以及考试
@@ -170,7 +170,7 @@ public class AssignmentController {
      */
     @GetMapping("/class/")
     public BaseResult<List<Class>> getAllClass(){
-        return new BaseResult<>(200,"所有班级",classsService.list());
+        return new BaseResult<>(200,"所有班级", classService.list());
     }
 
     /**
