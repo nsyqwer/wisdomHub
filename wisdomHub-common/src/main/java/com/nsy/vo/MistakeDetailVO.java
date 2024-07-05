@@ -11,6 +11,8 @@ import lombok.Data;
  */
 @Data
 public class MistakeDetailVO {
+
+
     /**
      * 题目类型
      */

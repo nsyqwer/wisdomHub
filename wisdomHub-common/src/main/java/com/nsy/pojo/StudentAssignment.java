@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import lombok.Data;
 
 /**
@@ -68,6 +70,30 @@ public class StudentAssignment implements Serializable {
      */
     @TableField(value = "course_id")
     private Integer courseId;
+
+    /**
+     * 作业标题
+    **/
+    @TableField(value = "title")
+    private String title;
+
+    /**
+     * 作业1，考试2
+     **/
+    @TableField(value = "type")
+    private Integer type;
+
+    /**
+     * 学生开始考试时间
+    **/
+    @TableField(value = "exam_begin_time")
+    private LocalDateTime examBeginTime;
+
+    /**
+     * 学生结束考试时间
+    **/
+    @TableField(value = "exam_end_time")
+    private LocalDateTime examEndTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

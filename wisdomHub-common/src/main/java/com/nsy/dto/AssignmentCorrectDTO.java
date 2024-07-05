@@ -3,6 +3,8 @@ package com.nsy.dto;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @className: AssignmentCorrectDTO
  * @author: 宁舒意
@@ -34,6 +36,6 @@ public class AssignmentCorrectDTO {
     /**
      * 学生回答内容（json）（AssignmentQuestion类的对象），此时每个content里面的每道题目要有分数和评语
      */
-    private String content;
+    private List<AssignmentQuestionDTO> content;
 
 }

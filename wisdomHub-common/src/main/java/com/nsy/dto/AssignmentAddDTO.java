@@ -14,6 +14,17 @@ import java.util.List;
 public class AssignmentAddDTO {
 
     /**
+     * 作业id(传了id就是编辑，没传就是新增)
+    **/
+    private Integer assignmentId;
+
+    /**
+     * 作业1，考试2
+    **/
+    private Integer type;
+
+
+    /**
      * 课程id
      */
     private Integer courseId;
@@ -27,4 +38,5 @@ public class AssignmentAddDTO {
      * 作业内容
      */
     private List<AssignmentQuestionDTO> content;
+
 }

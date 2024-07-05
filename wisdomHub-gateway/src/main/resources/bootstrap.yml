@@ -13,3 +13,6 @@ spring:
         server-addr: ${nacos-addr:127.0.0.1:8848}
       discovery:
         ephemeral: true
+
+
+

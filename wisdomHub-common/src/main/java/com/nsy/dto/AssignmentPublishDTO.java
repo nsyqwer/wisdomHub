@@ -1,7 +1,9 @@
 package com.nsy.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +15,12 @@ import java.util.List;
  */
 @Data
 public class AssignmentPublishDTO {
+
+    /**
+     * 作业1，考试2
+     **/
+    private Integer type;
+
     /**
      * 作业id
      */
@@ -20,12 +28,17 @@ public class AssignmentPublishDTO {
     /**
      * 开始时间
      */
-    private Date beginDate;
+    private LocalDateTime beginDate;
 
     /**
      * 结束时间
      */
-    private Date endDate;
+    private LocalDateTime endDate;
+
+    /**
+     * 考试时间
+    **/
+    private Integer examTime;
     /**
      * 作业发放对象，班级ID集合
      */

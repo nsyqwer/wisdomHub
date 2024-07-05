@@ -16,9 +16,9 @@ import java.util.Date;
 @Data
 public class MyAssignmentVO {
     /**
-     * 主键id
+     * 作业id
      */
-    private Integer id;
+    private Integer assignmentId;
 
 
     /**

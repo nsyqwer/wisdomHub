@@ -1,7 +1,11 @@
 package com.nsy.service;
 
-import com.nsy.pojo.StudentAssignment;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.nsy.model.dto.AssignmentPublishDTO;
+import com.nsy.model.dto.StudentAssignmentDTO;
+import com.nsy.model.pojo.StudentAssignment;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.nsy.model.vo.MyAssignmentVO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,4 +18,11 @@ import java.util.List;
 @Service
 public interface StudentAssignmentService extends IService<StudentAssignment> {
     public List<Integer> findStudentIdsByClassIds(List<Integer> classIds);
+
+
+
+
+    void writeAssignment(StudentAssignmentDTO studentAssignmentDTO) throws JsonProcessingException;
+
+
 }
