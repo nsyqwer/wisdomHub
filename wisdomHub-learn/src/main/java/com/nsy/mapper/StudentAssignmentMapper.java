@@ -73,6 +73,16 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
 
 
 
+    @Select("SELECT COUNT(*) " +
+            "FROM student_assignment sa " +
+            "JOIN assignment a ON sa.assignment_id = a.id " +
+            "JOIN student s ON sa.student_id = s.id " +
+            "WHERE s.class_id = #{classId} " +
+            "AND a.course_id = #{courseId} " +
+            "AND a.state = #{assignmentState} " +
+            "AND sa.state = #{studentAssignmentState}")
+    int countTeaAssign(int classId,  int courseId, int assignmentState, int studentAssignmentState);
+
 
 
 

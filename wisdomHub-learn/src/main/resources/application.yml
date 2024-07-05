@@ -13,6 +13,11 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+  neo4j:
+    authentication:
+      username: neo4j
+      password: 123456
+    uri: neo4j://192.168.150.101:7687
 
 
 mybatis-plus:

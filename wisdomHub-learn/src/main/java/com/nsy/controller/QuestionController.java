@@ -95,12 +95,12 @@ public class QuestionController {
     /**
      * 教师：题目详情
      * @author 宁舒意
-     * @date 19:25 2024/5/19
+     * @date 18:49 2024/7/5
      * @param questionId 题目id
-     * @return com.nsy.model.BaseResult
-     **/
+     * @return com.nsy.model.BaseResult<com.nsy.model.pojo.Question>
+     */
     @GetMapping("/{questionId}")
-    public BaseResult getQuestion(@PathVariable Integer questionId){
+    public BaseResult<Question> getQuestion(@PathVariable Integer questionId){
         Question question =questionService.getById(questionId);
         return new BaseResult(200,"获取成功",question);
     }

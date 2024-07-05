@@ -7,10 +7,13 @@ import com.nsy.mapper.mapstruct.AssignmentDTOMapper;
 import com.nsy.model.BaseResult;
 import com.nsy.model.dto.*;
 import com.nsy.model.pojo.Assignment;
+import com.nsy.model.pojo.Class;
 import com.nsy.model.pojo.Course;
 import com.nsy.model.pojo.StudentAssignment;
 import com.nsy.model.vo.MyAssignmentVO;
+import com.nsy.model.vo.TeacherAssignVO;
 import com.nsy.service.AssignmentService;
+import com.nsy.service.ClasssService;
 import com.nsy.service.CourseService;
 import com.nsy.service.StudentAssignmentService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +47,9 @@ public class AssignmentController {
 
     @Autowired
     StudentAssignmentService studentAssignmentService;
+
+    @Autowired
+    private ClasssService classsService;
 
     /**
      * 学生：查看所有作业，或者已完成作业，或者未完成作业以及考试
@@ -107,7 +113,22 @@ public class AssignmentController {
 
     //作业管理
 
-    //添加作业，删除作业，编辑作业，批改学生作业
+    //老师查看所有作业，添加作业，删除作业，编辑作业，批改学生作业
+
+
+    /**
+     * 教师查看作业或者考试
+     * @author 宁舒意
+     * @date 17:13 2024/7/5
+     * @param teaCherAssignmentDTO
+     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.vo.TeacherAssignVO>>
+     */
+    @GetMapping("/teacher/")
+    public BaseResult<List<TeacherAssignVO>> getAssignByCId(@RequestParam TeaCherAssignmentDTO teaCherAssignmentDTO){
+        List<TeacherAssignVO> teacherAssignVOList =assignmentService.getTeacherAssignVO(teaCherAssignmentDTO);
+        return new BaseResult<>(200,"教师查看作业或者考试概况",teacherAssignVOList);
+    }
+
     /**
      * 教师：添加作业,添加考试
      * assignmentId(传了id就是编辑，没传就是新增)
@@ -138,6 +159,18 @@ public class AssignmentController {
         assignmentService.save(assignment);
         System.out.println("这"+assignment);
         return new BaseResult(200,"添加或编辑作业考试成功",assignment.getId());
+    }
+
+
+    /**
+     * 老师：获取所有班级
+     * @author 宁舒意
+     * @date 11:40 2024/7/5
+     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.pojo.Class>>
+     */
+    @GetMapping("/class/")
+    public BaseResult<List<Class>> getAllClass(){
+        return new BaseResult<>(200,"所有班级",classsService.list());
     }
 
     /**

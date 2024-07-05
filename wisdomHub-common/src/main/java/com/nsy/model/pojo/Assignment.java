@@ -86,6 +86,11 @@ public class Assignment implements Serializable {
     @TableField
     private Integer examTime;
 
+    /**
+     * class_list,发放作业的对象
+    **/
+    private String classList;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

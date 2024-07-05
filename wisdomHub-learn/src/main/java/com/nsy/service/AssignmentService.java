@@ -5,8 +5,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nsy.model.dto.AssignmentPublishDTO;
 import com.nsy.model.dto.AssignmentQuestionDTO;
 import com.nsy.model.dto.StudentAssignmentDTO;
+import com.nsy.model.dto.TeaCherAssignmentDTO;
 import com.nsy.model.pojo.Assignment;
 import com.nsy.model.vo.MyAssignmentVO;
+import com.nsy.model.vo.TeacherAssignVO;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -35,4 +37,12 @@ public interface AssignmentService extends IService<Assignment> {
     void publishAssignment(AssignmentPublishDTO assignmentPublishDTO) throws IOException;
 
 
+    /**
+     * 教师查看作业或者考试
+     * @author 宁舒意
+     * @date 16:05 2024/7/5
+     * @param teaCherAssignmentDTO
+     * @return java.util.List<com.nsy.model.vo.TeacherAssignVO>
+     */
+    List<TeacherAssignVO> getTeacherAssignVO(TeaCherAssignmentDTO teaCherAssignmentDTO);
 }

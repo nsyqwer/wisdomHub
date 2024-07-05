@@ -6,14 +6,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nsy.constant.AssignmentTypeEnum;
 import com.nsy.constant.QueryAssignmentEnum;
+import com.nsy.constant.StudentAssignmentEnum;
 import com.nsy.mapper.AssignmentMapper;
 import com.nsy.mapper.StudentAssignmentMapper;
+import com.nsy.mapper.mapstruct.AssignmentDTOMapper;
 import com.nsy.model.dto.AssignmentPublishDTO;
 import com.nsy.model.dto.AssignmentQuestionDTO;
 import com.nsy.model.dto.StudentAssignmentDTO;
+import com.nsy.model.dto.TeaCherAssignmentDTO;
 import com.nsy.model.pojo.Assignment;
+import com.nsy.model.pojo.Class;
 import com.nsy.model.pojo.StudentAssignment;
 import com.nsy.model.vo.MyAssignmentVO;
+import com.nsy.model.vo.TeacherAssignVO;
 import com.nsy.service.AssignmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -96,7 +102,7 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
         studentAssignment.setTitle(assignment.getTitle());
         studentAssignment.setType(type);
         //查询到作业所属课程id
-        //TODO 这里的content是assignmentQuestion的数组，发布的时候答案和答案解析不能传过去
+        //这里的content是assignmentQuestion的数组，发布的时候答案和答案解析不能传过去
         List<AssignmentQuestionDTO> assignmentQuestionDTOList = getQuestion(assignment.getContent());
 
         assignmentQuestionDTOList.forEach(dto -> {
@@ -109,6 +115,46 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
             studentAssignment.setStudentId(studentId);
             studentAssignmentMapper.insert(studentAssignment);
         }
+    }
+
+
+    @Override
+    public List<TeacherAssignVO> getTeacherAssignVO(TeaCherAssignmentDTO teaCherAssignmentDTO) {
+       List<Assignment>assignmentList =  assignmentMapper.selectList(new QueryWrapper<Assignment>()
+               .eq("course_id",teaCherAssignmentDTO.getCourseId())
+               .eq("state",teaCherAssignmentDTO.getState())
+               .eq("type",teaCherAssignmentDTO.getType()));
+
+        int courseId =teaCherAssignmentDTO.getCourseId();
+        int state =teaCherAssignmentDTO.getState();
+
+
+       List<TeacherAssignVO> teacherAssignVOList=new ArrayList<>();
+        for (Assignment assignment : assignmentList) {
+            TeacherAssignVO teacherAssignVO =new TeacherAssignVO();
+            AssignmentDTOMapper.INSTANCE.assignPojoToVo(assignment,teacherAssignVO);
+
+            int unCommittedNum =0;
+            int waitCorrectNum=0;
+            int finishedNum=0;
+            int allNum=0;
+            //遍历每个班级
+            for (Class aClass : teacherAssignVO.getClassList()) {
+                unCommittedNum+=studentAssignmentMapper.countTeaAssign(aClass.getId(),courseId, state, StudentAssignmentEnum.UNCOMMITTED.getCode());
+                waitCorrectNum+=studentAssignmentMapper.countTeaAssign(aClass.getId(), courseId, state, StudentAssignmentEnum.WaitCorrect.getCode());
+                finishedNum+=studentAssignmentMapper.countTeaAssign(aClass.getId(), courseId, state, StudentAssignmentEnum.FINISHED.getCode());
+            }
+            allNum =unCommittedNum+waitCorrectNum+finishedNum;
+
+            teacherAssignVO.setUnCommittedNum(unCommittedNum);
+            teacherAssignVO.setWaitCorrectNum(waitCorrectNum);
+            teacherAssignVO.setFinishedNum(finishedNum);
+            teacherAssignVO.setAllNum(allNum);
+
+            teacherAssignVOList.add(teacherAssignVO);
+        }
+
+        return teacherAssignVOList;
     }
 }
 
