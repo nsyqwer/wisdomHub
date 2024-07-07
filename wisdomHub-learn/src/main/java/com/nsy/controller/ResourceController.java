@@ -5,10 +5,7 @@ import com.nsy.model.BaseResult;
 import com.nsy.model.pojo.Resource;
 import com.nsy.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,6 +16,7 @@ import java.util.List;
  * @date: 2024/6/10 21:30
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/resource")
 public class ResourceController {
 

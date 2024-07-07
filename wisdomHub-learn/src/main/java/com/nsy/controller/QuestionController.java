@@ -21,6 +21,7 @@ import java.util.List;
  * @date: 2024/6/10 21:04
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/question")
 public class QuestionController {
     /**
@@ -46,6 +47,20 @@ public class QuestionController {
         return new BaseResult<>(200,"获取课程所有题目",questionList);
     }
 
+
+    /**
+     * 教师：添加单个题目
+     * @author 宁舒意
+     * @date 11:17 2024/7/7
+     * @param question
+     * @return com.nsy.model.BaseResult
+     */
+    @PutMapping("")
+    public BaseResult question(@RequestBody Question question){
+        questionService.save(question);
+        return new BaseResult(200,"添加成功");
+    }
+
     //添加题目，删除题目，查看题目详情，导入题目（AI）
     /**
      * 教师：添加题目
@@ -54,7 +69,7 @@ public class QuestionController {
      * @param questions List<Question> questions，泛型为Question的集合
      * @return com.nsy.model.BaseResult
      **/
-    @PutMapping("")
+    @PutMapping("list")
     public BaseResult questions(@RequestBody List<Question> questions){
         //需要前端传过来的question的connect字段本身就是Json字符串
         for (Question question : questions) {

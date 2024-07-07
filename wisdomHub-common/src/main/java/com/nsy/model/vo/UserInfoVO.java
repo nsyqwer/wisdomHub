@@ -45,6 +45,6 @@ public class UserInfoVO {
     /**
      * 身份
      */
-    private String identity;
+    private Integer identity;
 
 }

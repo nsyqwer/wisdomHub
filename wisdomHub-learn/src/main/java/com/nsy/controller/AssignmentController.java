@@ -13,6 +13,8 @@ import com.nsy.model.pojo.Class;
 import com.nsy.model.pojo.Course;
 import com.nsy.model.pojo.StudentAssignment;
 import com.nsy.model.vo.MyAssignmentVO;
+import com.nsy.model.vo.StudentAssignDetailVO;
+import com.nsy.model.vo.StudentSubmissionVO;
 import com.nsy.model.vo.TeacherAssignVO;
 import com.nsy.service.AssignmentService;
 import com.nsy.service.ClassService;
@@ -35,6 +37,7 @@ import java.util.List;
   *
  **/
 @Slf4j
+@CrossOrigin
 @RestController
 @RequestMapping("/assignment")
 public class AssignmentController {
@@ -157,7 +160,6 @@ public class AssignmentController {
         }
         assignment.setScore(totalScore);
         assignmentService.save(assignment);
-        System.out.println("这"+assignment);
         return new BaseResult(200,"添加或编辑作业考试成功",assignment.getId());
     }
 
@@ -247,5 +249,38 @@ public class AssignmentController {
         studentAssignmentService.updateById(studentAssignment);
         return new BaseResult(200,"批改成功");
     }
+
+
+    /**
+     *  教师查看作业提交列表
+     * @author 宁舒意
+     * @date 11:03 2024/7/7
+     * @param assignmentId 作业id
+     * @param type 作业类型（1作业，2考试）
+     * @param studentAssignmentState （学生作业考试状态，不传则是全部，（未提交0，待批阅1，已完成2））
+     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.vo.StudentSubmissionVO>>
+     */
+    @GetMapping("/Submission_list")
+    public BaseResult<List<StudentSubmissionVO>> listSubmission(Integer assignmentId,Integer type,Integer studentAssignmentState){
+        return new BaseResult<>(200,"获取成功",studentAssignmentService.listSubmission(assignmentId,type,studentAssignmentState));
+    }
+
+
+    /**
+     * 教师查看某位学生作业详情
+     * @author 宁舒意
+     * @date 11:32 2024/7/7
+     * @param studentAssignmentId 学生作答作业考试id
+     * @return com.nsy.model.BaseResult<com.nsy.model.vo.StudentAssignDetailVO>
+     */
+    @GetMapping("/student/{studentAssignmentId}")
+    public BaseResult<StudentAssignDetailVO> assignDetail(@PathVariable Integer studentAssignmentId) throws JsonProcessingException {
+        StudentAssignDetailVO studentAssignDetailVO =studentAssignmentService.geStuAssignDetail(studentAssignmentId);
+        return  new BaseResult<>(200,"获取成功",studentAssignDetailVO);
+    }
+
+
+
+
 
 }

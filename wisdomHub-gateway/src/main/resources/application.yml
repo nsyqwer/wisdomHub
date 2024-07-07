@@ -1,49 +1,46 @@
 server:
-  port: 8084
+  port: 8086
 spring:
-  application:
-    name: wisdomHub-gateway
-  cloud:
-    nacos:
-      server-addr: localhost:8848
-    gateway:
-      globalcors: # 定义全局CORS配置
-        cors-configurations: # CORS配置的具体定义
-          '[/**]': # 匹配所有路径的路由
-            allowedMethods: "*" # 允许所有HTTP方法
-            allowedHeaders: "*" # 允许所有请求头
-            allowedOriginPatterns: "*" # 允许来自所有源的请求
-            allowCredentials: true # 允许携带凭证的请求
-            exposedHeaders: # 定义要暴露给客户端的请求头
-              - Authorization # 暴露Authorization请求头
-              - Authorization-Refresh # 暴露Authorization-Refresh请求头
-
-
-      routes:
-        - id: wisdomHub-teacher
-          uri: lb://wisdomHub-teacher  # 路由的目标地址 lb是负载均衡，后面跟服务名称(推荐)
-          predicates:
-            - Path=/teacher/**
-          filters:
-#            - StripPrefix=1
-        - id: cloudView-testPaper
-          uri: lb://cloudView-testPaper
-          predicates:
-            - Path=/examPaper/**,/AI/**
-          filters:
-        #            - StripPrefix=1
-        - id: cloudView-testPaper
-          uri: lb://cloudView-testPaper
-          predicates:
-            - Path=/examPaper/**
-          filters:
-        #            - StripPrefix=1
-        - id: cloudView-examAnalysis
-          uri: lb://cloudView-examAnalysis
-          predicates:
-            - Path=/examAnalysis/**
-          filters:
-
   main:
     web-application-type: reactive
-    allow-circular-references: true
+  application:
+    name: api-gateway
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+    # gateway??
+    gateway:
+      # ????
+      routes:
+        - id: order_route # 路由名字
+          uri: lb://wisdomHub-learn  # lb是负载均衡，sentinel是注册中心要转发到的服务的端口对应的注册名
+          predicates:
+            - Path=/assignment/**
+        - id: order_route # 路由名字
+          uri: lb://wisdomHub-learn  # lb是负载均衡，sentinel是注册中心要转发到的服务的端口对应的注册名
+          predicates:
+            - Path=/course/**
+        - id: order_route # 路由名字
+          uri: lb://wisdomHub-learn  # lb是负载均衡，sentinel是注册中心要转发到的服务的端口对应的注册名
+          predicates:
+            - Path=/question/**
+        - id: order_route # 路由名字
+          uri: lb://wisdomHub-learn  # lb是负载均衡，sentinel是注册中心要转发到的服务的端口对应的注册名
+          predicates:
+            - Path=/resource/**
+        - id: wisdomHub-user # 路由名字
+          uri: lb://wisdomHub-user  # lb是负载均衡，sentinel是注册中心要转发到的服务的端口对应的注册名
+          predicates:
+            - Path=/user/**
+        - id: wisdomHub-courseActivity # 路由名字
+          uri: lb://wisdomHub-courseActivity  # lb是负载均衡，sentinel是注册中心要转发到的服务的端口对应的注册名
+          predicates:
+            - Path=/activity/**
+
+#            - Path=/course/**
+#            - Path=/question/**
+#            - Path=/resource/** # 断言，地址含user的就会转发
+#当访问localhost:8820/user/getUserById时，转发到注册中心服务名称为sentinel的端口
+#localhost:9005/getUserById
+#或localhost:9006/getUserById
+

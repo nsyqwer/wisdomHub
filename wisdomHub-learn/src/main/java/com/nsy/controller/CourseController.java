@@ -2,15 +2,16 @@ package com.nsy.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.nsy.model.BaseResult;
+import com.nsy.model.dto.CourseSetClassDTO;
 import com.nsy.model.pojo.Chapter;
 import com.nsy.model.pojo.Course;
 import com.nsy.model.vo.StudyRecordVO;
 import com.nsy.service.ChapterService;
 import com.nsy.service.CourseService;
+import com.nsy.service.StudentCourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +21,7 @@ import java.util.List;
  * @date: 2024/6/10 21:14
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/course")
 public class CourseController {
 
@@ -29,6 +31,19 @@ public class CourseController {
 
     @Autowired
     private ChapterService chapterService;
+
+    @Autowired
+    private StudentCourseService studentCourseService;
+
+
+    /**
+     * 设置哪些班学习那个课程
+    **/
+    @PutMapping("/set_class")
+    public BaseResult setClass(@RequestBody CourseSetClassDTO courseSetClassDTO){
+       studentCourseService.setClass(courseSetClassDTO);
+        return new BaseResult(200,"添加成功");
+    }
 
     /**
      * 学生：查看我的课程

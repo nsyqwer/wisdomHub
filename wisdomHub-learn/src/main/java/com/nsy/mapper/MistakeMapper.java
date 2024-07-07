@@ -6,6 +6,7 @@ import com.nsy.model.vo.MistakeDetailVO;
 import com.nsy.model.vo.MistakeVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 

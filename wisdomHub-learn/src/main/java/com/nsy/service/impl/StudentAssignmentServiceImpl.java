@@ -3,16 +3,24 @@ package com.nsy.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nsy.constant.AssignmentTypeEnum;
 import com.nsy.mapper.AssignmentMapper;
 import com.nsy.mapper.CourseMapper;
+import com.nsy.mapper.StudentMapper;
 import com.nsy.model.dto.AssignmentPublishDTO;
+import com.nsy.model.dto.AssignmentQuestionDTO;
+import com.nsy.model.dto.CourseSetClassDTO;
 import com.nsy.model.dto.StudentAssignmentDTO;
 import com.nsy.model.pojo.Assignment;
+import com.nsy.model.pojo.Class;
 import com.nsy.model.pojo.Course;
+import com.nsy.model.pojo.Student;
 import com.nsy.model.pojo.StudentAssignment;
 import com.nsy.model.vo.MyAssignmentVO;
+import com.nsy.model.vo.StudentAssignDetailVO;
+import com.nsy.model.vo.StudentSubmissionVO;
 import com.nsy.service.StudentAssignmentService;
 import com.nsy.mapper.StudentAssignmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +41,12 @@ public class StudentAssignmentServiceImpl extends ServiceImpl<StudentAssignmentM
     @Autowired
     private StudentAssignmentMapper studentAssignmentMapper;
 
+
     @Autowired
     private AssignmentMapper assignmentMapper;
+
+    @Autowired
+    private StudentMapper studentMapper;
 
     public List<Integer> findStudentIdsByClassIds(List<Integer> classIds) {
         // 将 List<Integer> 转换为逗号分隔的字符串
@@ -74,7 +86,29 @@ public class StudentAssignmentServiceImpl extends ServiceImpl<StudentAssignmentM
 
     }
 
+    @Override
+    public List<StudentSubmissionVO> listSubmission(Integer assignmentId, Integer type, Integer studentAssignmentState) {
+        if(studentAssignmentState==null){
+            return studentAssignmentMapper.listSubmissionByAll(assignmentId,type);
+        }
+        return studentAssignmentMapper.listSubmission(assignmentId,type,studentAssignmentState);
+    }
 
+    @Override
+    public StudentAssignDetailVO geStuAssignDetail(Integer studentAssignmentId) throws JsonProcessingException {
+        StudentAssignment studentAssignment =studentAssignmentMapper.selectById(studentAssignmentId);
+        Student student =studentMapper.selectById(studentAssignment.getStudentId());
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<AssignmentQuestionDTO> assignmentQuestionDTOList = objectMapper
+                .readValue(studentAssignment.getContent(), new TypeReference<List<AssignmentQuestionDTO>>() {});
+        StudentAssignDetailVO studentAssignDetailVO =new StudentAssignDetailVO();
+        studentAssignDetailVO.setName(student.getName());
+        studentAssignDetailVO.setClassName(student.getClassName());
+        studentAssignDetailVO.setQuestionList(assignmentQuestionDTOList);
+        studentAssignDetailVO.setTitle(studentAssignment.getTitle());
+        studentAssignDetailVO.setStudentScore(studentAssignment.getStudentScore());
+        return studentAssignDetailVO;
+    }
 }
 
 

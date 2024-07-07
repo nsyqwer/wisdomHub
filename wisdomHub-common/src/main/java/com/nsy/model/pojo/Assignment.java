@@ -83,12 +83,13 @@ public class Assignment implements Serializable {
     /**
      * 考试时间，单位是分钟
     **/
-    @TableField
+    @TableField(value ="exam_time" )
     private Integer examTime;
 
     /**
      * class_list,发放作业的对象
     **/
+    @TableField(value = "class_list")
     private String classList;
 
     @TableField(exist = false)

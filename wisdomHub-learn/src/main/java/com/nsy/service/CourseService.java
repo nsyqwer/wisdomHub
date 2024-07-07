@@ -1,6 +1,7 @@
 package com.nsy.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.nsy.model.dto.CourseSetClassDTO;
 import com.nsy.model.pojo.Course;
 
 import java.util.List;
@@ -23,4 +24,6 @@ public interface CourseService extends IService<Course> {
     List<Course> listByTeacherId(Integer teacherId);
 
     List<Course> listByStudentId(int studentId);
+
+
 }

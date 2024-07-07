@@ -27,10 +27,10 @@ public class Role implements Serializable {
     private Integer userId;
 
     /**
-     * 身份（student,teacher）
+     * 身份（1学生，2老师）
      */
     @TableField(value = "identity")
-    private String identity;
+    private Integer identity;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

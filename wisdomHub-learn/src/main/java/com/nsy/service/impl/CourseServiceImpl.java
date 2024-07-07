@@ -2,6 +2,7 @@ package com.nsy.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nsy.mapper.CourseMapper;
+import com.nsy.model.dto.CourseSetClassDTO;
 import com.nsy.model.pojo.Course;
 import com.nsy.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
     public List<Course> listByStudentId(int studentId) {
         return courseMapper.listByStudentId(studentId);
     }
+
 }
 
 
