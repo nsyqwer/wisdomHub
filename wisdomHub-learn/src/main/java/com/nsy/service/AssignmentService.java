@@ -4,8 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nsy.model.dto.AssignmentPublishDTO;
 import com.nsy.model.dto.AssignmentQuestionDTO;
-import com.nsy.model.dto.StudentAssignmentDTO;
-import com.nsy.model.dto.TeaCherAssignmentDTO;
+import com.nsy.model.dto.TeacherAssignmentDTO;
 import com.nsy.model.pojo.Assignment;
 import com.nsy.model.vo.MyAssignmentVO;
 import com.nsy.model.vo.TeacherAssignVO;
@@ -44,5 +43,5 @@ public interface AssignmentService extends IService<Assignment> {
      * @param teaCherAssignmentDTO
      * @return java.util.List<com.nsy.model.vo.TeacherAssignVO>
      */
-    List<TeacherAssignVO> getTeacherAssignVO(TeaCherAssignmentDTO teaCherAssignmentDTO);
+    List<TeacherAssignVO> getTeacherAssignVO(TeacherAssignmentDTO teaCherAssignmentDTO);
 }

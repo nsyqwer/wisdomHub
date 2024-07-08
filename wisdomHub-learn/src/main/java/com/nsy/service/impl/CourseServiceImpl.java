@@ -30,6 +30,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course>
         return courseMapper.listByStudentId(studentId);
     }
 
+    @Override
+    public void removeCourse(int courseId) {
+
+    }
 }
 
 

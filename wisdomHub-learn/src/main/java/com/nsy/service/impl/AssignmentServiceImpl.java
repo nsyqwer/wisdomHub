@@ -13,15 +13,13 @@ import com.nsy.mapper.StudentAssignmentMapper;
 import com.nsy.mapper.mapstruct.AssignmentDTOMapper;
 import com.nsy.model.dto.AssignmentPublishDTO;
 import com.nsy.model.dto.AssignmentQuestionDTO;
-import com.nsy.model.dto.StudentAssignmentDTO;
-import com.nsy.model.dto.TeaCherAssignmentDTO;
+import com.nsy.model.dto.TeacherAssignmentDTO;
 import com.nsy.model.pojo.Assignment;
 import com.nsy.model.pojo.Class;
 import com.nsy.model.pojo.StudentAssignment;
 import com.nsy.model.vo.MyAssignmentVO;
 import com.nsy.model.vo.TeacherAssignVO;
 import com.nsy.service.AssignmentService;
-import com.nsy.service.ClassService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -112,13 +110,6 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
         //将每个学生都加入到作业中来
         String classIdsStr = String.join(",", assignmentPublishDTO.getClassIdList().stream().map(String::valueOf).toArray(String[]::new));
         List<Integer> studentIds =studentAssignmentMapper.findStudentIdsByClassIds(classIdsStr);
-        StudentAssignment studentAssignment =new StudentAssignment();
-        studentAssignment.setAssignmentId(assignment.getId());
-        studentAssignment.setState(0);//0表示未完成
-        studentAssignment.setStudentScore(BigDecimal.ZERO);
-        studentAssignment.setCourseId(assignment.getCourseId());
-        studentAssignment.setTitle(assignment.getTitle());
-        studentAssignment.setType(type);
 
         //查询到作业所属课程id
         //这里的content是assignmentQuestion的数组，发布的时候答案和答案解析不能传过去
@@ -129,16 +120,24 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
             dto.setAnswerAnalysis(null);
         });
         String json = ListToJson(assignmentQuestionDTOList);
-        studentAssignment.setContent(json);
+
         for (Integer studentId : studentIds) {
+            StudentAssignment studentAssignment =new StudentAssignment();
+            studentAssignment.setAssignmentId(assignment.getId());
+            studentAssignment.setState(0);//0表示未完成
+            studentAssignment.setStudentScore(BigDecimal.ZERO);
+            studentAssignment.setCourseId(assignment.getCourseId());
+            studentAssignment.setTitle(assignment.getTitle());
+            studentAssignment.setType(type);
             studentAssignment.setStudentId(studentId);
+            studentAssignment.setContent(json);
             studentAssignmentMapper.insert(studentAssignment);
         }
     }
 
 
     @Override
-    public List<TeacherAssignVO> getTeacherAssignVO(TeaCherAssignmentDTO teaCherAssignmentDTO) {
+    public List<TeacherAssignVO> getTeacherAssignVO(TeacherAssignmentDTO teaCherAssignmentDTO) {
        List<Assignment>assignmentList =  assignmentMapper.selectList(new QueryWrapper<Assignment>()
                .eq("course_id",teaCherAssignmentDTO.getCourseId())
                .eq("state",teaCherAssignmentDTO.getState())

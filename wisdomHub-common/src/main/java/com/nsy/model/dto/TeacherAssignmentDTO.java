@@ -1,16 +1,15 @@
 package com.nsy.model.dto;
 
 import lombok.Data;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * @className: TeaCherAssignmentDTO
+ * @className: TeacherAssignmentDTO
  * @author: 宁舒意
  * @description: 教师：查看课程的作业的查询类
  * @date: 2024/7/5 16:02
  */
 @Data
-public class TeaCherAssignmentDTO {
+public class TeacherAssignmentDTO {
     /**
      * 课程id
     **/

@@ -22,7 +22,13 @@ public class LoginController {
     @GetMapping("/login")
     public BaseResult<UserInfoVO> Login(@RequestParam String account,@RequestParam String password){
         UserInfoVO userInfoVO =userService.login(account,password);
-        return new BaseResult<>(200,"登录成功",userInfoVO);
+        if(userInfoVO!=null){
+            return new BaseResult<>(200,"登录成功",userInfoVO);
+        }
+        else {
+            return new BaseResult<>(200,"登录失败");
+        }
+
     }
 
 

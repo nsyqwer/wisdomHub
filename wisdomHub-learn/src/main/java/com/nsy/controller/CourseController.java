@@ -5,10 +5,12 @@ import com.nsy.model.BaseResult;
 import com.nsy.model.dto.CourseSetClassDTO;
 import com.nsy.model.pojo.Chapter;
 import com.nsy.model.pojo.Course;
+import com.nsy.model.pojo.TeacherCourse;
 import com.nsy.model.vo.StudyRecordVO;
 import com.nsy.service.ChapterService;
 import com.nsy.service.CourseService;
 import com.nsy.service.StudentCourseService;
+import com.nsy.service.TeacherCourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +23,6 @@ import java.util.List;
  * @date: 2024/6/10 21:14
  */
 @RestController
-@CrossOrigin
 @RequestMapping("/course")
 public class CourseController {
 
@@ -35,6 +36,8 @@ public class CourseController {
     @Autowired
     private StudentCourseService studentCourseService;
 
+    @Autowired
+    private TeacherCourseService teacherCourseService;
 
     /**
      * 设置哪些班学习那个课程
@@ -83,8 +86,14 @@ public class CourseController {
      * @return com.nsy.model.BaseResult
      **/
     @PutMapping("")
-    public BaseResult saveCourse(@RequestBody Course course){
+    public BaseResult saveCourse(@RequestBody Course course,@RequestParam Integer teacherId){
         courseService.save(course);
+        TeacherCourse teacherCourse=new TeacherCourse();
+        teacherCourse.setCourseId(course.getId());
+        teacherCourse.setCourseName(course.getCourseName());
+        teacherCourse.setCourseImage(course.getImage());
+        teacherCourse.setTeacherId(teacherId);
+        teacherCourseService.save(teacherCourse);
         return new BaseResult(200,"创建成功");
     }
 

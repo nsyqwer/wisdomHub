@@ -16,7 +16,6 @@ import java.util.List;
  * @date: 2024/6/10 21:30
  */
 @RestController
-@CrossOrigin
 @RequestMapping("/resource")
 public class ResourceController {
 

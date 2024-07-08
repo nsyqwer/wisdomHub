@@ -21,7 +21,6 @@ import java.util.List;
  * @date: 2024/6/10 21:04
  */
 @RestController
-@CrossOrigin
 @RequestMapping("/question")
 public class QuestionController {
     /**
@@ -69,7 +68,7 @@ public class QuestionController {
      * @param questions List<Question> questions，泛型为Question的集合
      * @return com.nsy.model.BaseResult
      **/
-    @PutMapping("list")
+    @PutMapping("/list")
     public BaseResult questions(@RequestBody List<Question> questions){
         //需要前端传过来的question的connect字段本身就是Json字符串
         for (Question question : questions) {

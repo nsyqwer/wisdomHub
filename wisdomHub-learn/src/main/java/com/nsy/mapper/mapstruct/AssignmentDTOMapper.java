@@ -7,7 +7,6 @@ import com.nsy.constant.StudentAssignmentEnum;
 import com.nsy.model.dto.AssignmentAddDTO;
 import com.nsy.model.dto.AssignmentPublishDTO;
 import com.nsy.model.dto.AssignmentQuestionDTO;
-import com.nsy.model.dto.TeaCherAssignmentDTO;
 import com.nsy.model.pojo.Assignment;
 import com.nsy.model.pojo.Class;
 import com.nsy.model.pojo.StudentAssignment;

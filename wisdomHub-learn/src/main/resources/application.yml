@@ -17,7 +17,7 @@ spring:
     authentication:
       username: neo4j
       password: 123456
-    uri: neo4j://192.168.150.101:7687
+    uri: bolt://${neo4j-addr:localhost:7687}
 
 
 mybatis-plus:

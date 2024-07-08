@@ -7,7 +7,7 @@ import com.nsy.mapper.mapstruct.AssignmentDTOMapper;
 
 import com.nsy.model.BaseResult;
 import com.nsy.model.dto.*;
-import com.nsy.model.dto.TeaCherAssignmentDTO;
+import com.nsy.model.dto.TeacherAssignmentDTO;
 import com.nsy.model.pojo.Assignment;
 import com.nsy.model.pojo.Class;
 import com.nsy.model.pojo.Course;
@@ -37,7 +37,6 @@ import java.util.List;
   *
  **/
 @Slf4j
-@CrossOrigin
 @RestController
 @RequestMapping("/assignment")
 public class AssignmentController {
@@ -126,8 +125,8 @@ public class AssignmentController {
      * @param teaCherAssignmentDTO
      * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.vo.TeacherAssignVO>>
      */
-    @GetMapping("/teacher/")
-    public BaseResult<List<TeacherAssignVO>> getAssignByCId(@RequestParam TeaCherAssignmentDTO teaCherAssignmentDTO){
+    @GetMapping("/teacher")
+    public BaseResult<List<TeacherAssignVO>> getAssignByCId(TeacherAssignmentDTO teaCherAssignmentDTO){
         List<TeacherAssignVO> teacherAssignVOList =assignmentService.getTeacherAssignVO(teaCherAssignmentDTO);
         return new BaseResult<>(200,"教师查看作业或者考试概况",teacherAssignVOList);
     }
@@ -170,7 +169,7 @@ public class AssignmentController {
      * @date 11:40 2024/7/5
      * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.pojo.Class>>
      */
-    @GetMapping("/class/")
+    @GetMapping("/class")
     public BaseResult<List<Class>> getAllClass(){
         return new BaseResult<>(200,"所有班级", classService.list());
     }

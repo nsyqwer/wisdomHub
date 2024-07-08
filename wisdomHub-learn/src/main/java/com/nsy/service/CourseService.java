@@ -26,4 +26,5 @@ public interface CourseService extends IService<Course> {
     List<Course> listByStudentId(int studentId);
 
 
+    void removeCourse(int courseId);
 }
