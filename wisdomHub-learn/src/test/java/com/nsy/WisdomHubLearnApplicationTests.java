@@ -3,17 +3,11 @@ package com.nsy;
 
 import com.nsy.manager.neo4j.service.KnowledgeService;
 import com.nsy.mapper.StudentAssignmentMapper;
-import com.nsy.model.vo.MyAssignmentVO;
-import com.nsy.service.StudentAssignmentService;
-import com.nsy.service.impl.StudentAssignmentServiceImpl;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.util.List;
 
 @SpringBootTest
 class WisdomHubLearnApplicationTests {

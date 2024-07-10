@@ -29,7 +29,7 @@ public interface MistakeMapper extends BaseMapper<Mistake> {
     MistakeDetailVO getDetail(int mistakeId);
 
 
-    @Select("select question.id,course_name,type,title " +
+    @Select("select question.id,question.course_name,type,title " +
             "from mistake join question  on mistake.question_id = question.id " +
             "where student_id =#{studentId}")
     List<MistakeVo> getMistakeVoBySid(int studentId);

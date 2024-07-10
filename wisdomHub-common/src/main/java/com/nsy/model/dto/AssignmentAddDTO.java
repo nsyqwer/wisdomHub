@@ -14,6 +14,11 @@ import java.util.List;
 public class AssignmentAddDTO {
 
     /**
+     * 创建者id
+    **/
+    private Integer creatorId;
+
+    /**
      * 作业id(传了id就是编辑，没传就是新增)
     **/
     private Integer assignmentId;

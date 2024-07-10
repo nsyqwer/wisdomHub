@@ -37,6 +37,7 @@
         <module>wisdomHub-user</module>
         <module>wisdomHub-learn</module>
         <module>wisdomHub-courseActivity</module>
+        <module>wisdomHub-ai</module>
     </modules>
 
     <dependencies>

@@ -2,8 +2,13 @@ package com.nsy.util.xunfei.text_moderation;
 
 import com.google.gson.Gson;
 import com.nsy.util.xunfei.text_moderation.utils.MyUtil;
+import com.nsy.util.xunfei.text_moderation.vo.Category;
+import com.nsy.util.xunfei.text_moderation.vo.Detail;
 import com.nsy.util.xunfei.text_moderation.vo.Response;
+import com.nsy.util.xunfei.text_moderation.vo.Result;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,5 +97,24 @@ public class TextMain {
         System.out.println(response);
 
         return response;
+    }
+
+    public static List<String> getViolations(String text) throws Exception {
+        List<String> violations = new ArrayList<>();
+        Result result = checkText(text).getData().getResult();
+
+        if(result.getSuggest().equals("block")){
+            Detail detail = result.getDetail();
+            List<Category> categoryList = detail.getCategory_list();
+            for(Category category : categoryList){
+                String violation = category.getCategory_description();
+                if(category.getWord_list() != null){
+                    violation += " : " + category.getWord_list().toString();
+                }
+                violations.add(violation);
+            }
+            return violations;
+        }
+        return null;
     }
 }

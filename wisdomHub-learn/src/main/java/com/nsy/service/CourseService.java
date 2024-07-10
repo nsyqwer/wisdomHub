@@ -3,6 +3,7 @@ package com.nsy.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.nsy.model.dto.CourseSetClassDTO;
 import com.nsy.model.pojo.Course;
+import com.nsy.model.vo.StudyRecordVO;
 
 import java.util.List;
 
@@ -26,5 +27,5 @@ public interface CourseService extends IService<Course> {
     List<Course> listByStudentId(int studentId);
 
 
-    void removeCourse(int courseId);
+    StudyRecordVO getStudentRecordVO(int studentId, int courseId);
 }

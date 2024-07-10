@@ -15,9 +15,9 @@ import java.math.BigDecimal;
 @Data
 public class ExamHistoryVo {
     /**
-     * 主键id
+     * 考试id
      */
-    private Integer id;
+    private Integer examId;
 
     /**
      * 考试标题

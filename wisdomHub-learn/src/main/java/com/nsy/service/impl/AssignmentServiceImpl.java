@@ -7,18 +7,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nsy.constant.AssignmentTypeEnum;
 import com.nsy.constant.QueryAssignmentEnum;
 import com.nsy.constant.StudentAssignmentEnum;
-import com.nsy.mapper.AssignmentMapper;
-import com.nsy.mapper.ClassMapper;
-import com.nsy.mapper.StudentAssignmentMapper;
+import com.nsy.mapper.*;
 import com.nsy.mapper.mapstruct.AssignmentDTOMapper;
+import com.nsy.model.dto.AssignmentAddDTO;
 import com.nsy.model.dto.AssignmentPublishDTO;
 import com.nsy.model.dto.AssignmentQuestionDTO;
 import com.nsy.model.dto.TeacherAssignmentDTO;
-import com.nsy.model.pojo.Assignment;
+import com.nsy.model.pojo.*;
 import com.nsy.model.pojo.Class;
-import com.nsy.model.pojo.StudentAssignment;
 import com.nsy.model.vo.MyAssignmentVO;
 import com.nsy.model.vo.TeacherAssignVO;
+import com.nsy.model.vo.TeacherExamVO;
 import com.nsy.service.AssignmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +49,15 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
 
     @Autowired
     private ClassMapper classMapper;
+
+    @Autowired
+    private CourseMapper courseMapper;
+
+    @Autowired
+    private TeacherMapper teacherMapper;
+
+    @Autowired
+    private QuestionMapper questionMapper;
 
     @Override
     public List<AssignmentQuestionDTO> getQuestion(String contentJson) throws IOException {
@@ -173,6 +181,63 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
         }
 
         return teacherAssignVOList;
+    }
+
+    @Override
+    public Integer saveAssignAndQuestion(AssignmentAddDTO assignmentAddDTO) throws JsonProcessingException {
+                //state设置为0表示草稿
+        Teacher teacher =teacherMapper.selectById(assignmentAddDTO.getCreatorId());
+        Assignment assignment =new Assignment();
+        if (assignmentAddDTO.getAssignmentId() != null) {
+            //表示编辑
+         assignment =assignmentMapper.selectById(assignmentAddDTO.getAssignmentId());
+        }
+        AssignmentDTOMapper.INSTANCE.AddDTOtoAssignment(assignmentAddDTO,assignment);
+
+        assignment.setState(0);
+        Course course=courseMapper.selectById(assignmentAddDTO.getCourseId());
+        assignment.setCourseName(course.getCourseName());
+        BigDecimal totalScore = BigDecimal.ZERO; // 初始化总和为0
+
+
+        for (AssignmentQuestionDTO dto : assignmentAddDTO.getContent()) {
+            totalScore = totalScore.add(dto.getQuestionScore()); // 将每个对象的 questionScore 字段值加到总和中
+            Question question =new Question();
+            AssignmentDTOMapper.INSTANCE.AddDTOtoQuestion(dto,question);
+            question.setCourseId(course.getId());
+            question.setCourseName(course.getCourseName());
+            question.setCreatorId(teacher.getId());
+            question.setCreatorName(teacher.getName());
+            questionMapper.insert(question);
+        }
+        assignment.setScore(totalScore);
+        assignment.setCreatorId(teacher.getId());
+        assignment.setCreatorName(teacher.getName());
+        assignmentMapper.insert(assignment);
+        return assignment.getId();
+    }
+
+    @Override
+    public List<TeacherExamVO> listExamByTid(Integer teacherId,Integer state) {
+        List<Assignment> assignmentList =new ArrayList<>();
+        if(state==null){
+            assignmentList =assignmentMapper.selectList(new QueryWrapper<Assignment>()
+                    .eq("creator_id",teacherId).eq("type",2));
+        }
+        else{
+            assignmentList =assignmentMapper.selectList(new QueryWrapper<Assignment>()
+                    .eq("creator_id",teacherId).eq("type",2).eq("state",state));
+        }
+        List<TeacherExamVO> teacherExamVOList =new ArrayList<>();
+        for (Assignment assignment : assignmentList) {
+            TeacherExamVO teacherExamVO =new TeacherExamVO();
+            AssignmentDTOMapper.INSTANCE.assignToExamVO(assignment,teacherExamVO);
+            teacherExamVOList.add(teacherExamVO);
+        }
+       // AssignmentDTOMapper.INSTANCE.listAssignToExamVO(assignmentList,teacherExamVOList);
+
+
+        return teacherExamVOList;
     }
 }
 

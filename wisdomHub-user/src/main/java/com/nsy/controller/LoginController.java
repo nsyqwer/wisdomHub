@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
  * @description: TODO
  * @date: 2024/5/19 14:38
  */
-@CrossOrigin
 @RestController
 @RequestMapping("/user")
 public class LoginController {

@@ -2,12 +2,14 @@ package com.nsy.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.nsy.model.dto.AssignmentAddDTO;
 import com.nsy.model.dto.AssignmentPublishDTO;
 import com.nsy.model.dto.AssignmentQuestionDTO;
 import com.nsy.model.dto.TeacherAssignmentDTO;
 import com.nsy.model.pojo.Assignment;
 import com.nsy.model.vo.MyAssignmentVO;
 import com.nsy.model.vo.TeacherAssignVO;
+import com.nsy.model.vo.TeacherExamVO;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -44,4 +46,8 @@ public interface AssignmentService extends IService<Assignment> {
      * @return java.util.List<com.nsy.model.vo.TeacherAssignVO>
      */
     List<TeacherAssignVO> getTeacherAssignVO(TeacherAssignmentDTO teaCherAssignmentDTO);
+
+    Integer saveAssignAndQuestion(AssignmentAddDTO assignmentAddDTO) throws JsonProcessingException;
+
+    List<TeacherExamVO> listExamByTid(Integer teacherId,Integer state);
 }

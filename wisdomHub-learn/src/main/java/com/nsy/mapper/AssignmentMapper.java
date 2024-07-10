@@ -2,7 +2,13 @@ package com.nsy.mapper;
 
 import com.nsy.model.pojo.Assignment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.nsy.model.vo.ExamHistoryVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
 * @author 宁舒意
@@ -13,6 +19,14 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface AssignmentMapper extends BaseMapper<Assignment> {
 
+    @Select("select id,student_score,title\n" +
+            "from student_assignment\n" +
+            "where student_id =#{studentId}\n" +
+            "and course_id =#{courseId} " +
+            "and type =2 and state=2")
+   @Result(property = "examId",column = "id")
+   @Result(property = "examTitle",column = "title")
+    List<ExamHistoryVo> listExam(Integer studentId,Integer courseId);
 
 
 }

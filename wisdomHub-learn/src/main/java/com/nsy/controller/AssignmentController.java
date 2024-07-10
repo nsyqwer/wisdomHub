@@ -12,18 +12,13 @@ import com.nsy.model.pojo.Assignment;
 import com.nsy.model.pojo.Class;
 import com.nsy.model.pojo.Course;
 import com.nsy.model.pojo.StudentAssignment;
-import com.nsy.model.vo.MyAssignmentVO;
-import com.nsy.model.vo.StudentAssignDetailVO;
-import com.nsy.model.vo.StudentSubmissionVO;
-import com.nsy.model.vo.TeacherAssignVO;
-import com.nsy.service.AssignmentService;
-import com.nsy.service.ClassService;
-import com.nsy.service.CourseService;
-import com.nsy.service.StudentAssignmentService;
+import com.nsy.model.vo.*;
+import com.nsy.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.image.BandCombineOp;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -53,6 +48,9 @@ public class AssignmentController {
     @Autowired
     private ClassService classService;
 
+    @Autowired
+    private QuestionService questionService;
+
     /**
      * 学生：查看所有作业，或者已完成作业，或者未完成作业以及考试
      * @author 宁舒意
@@ -81,7 +79,7 @@ public class AssignmentController {
      * @date 23:32 2024/6/3
      * @param studentId 学生id
      * @param assignmentId 作业id
-     * @return com.nsy.model.BaseResult<com.nsy.model.pojo.StudentAssignment>
+     * @return com.nsy.model.Bas eResult<com.nsy.model.pojo.StudentAssignment>
      **/
     @GetMapping("/{studentId}/{assignmentId}")
     public BaseResult<StudentAssignment> assignmentById(@PathVariable int studentId,@PathVariable int assignmentId){
@@ -113,9 +111,25 @@ public class AssignmentController {
 
 
 
+
     //作业管理
 
     //老师查看所有作业，添加作业，删除作业，编辑作业，批改学生作业
+
+
+    /**
+     *教师：查看所有课程考试
+     * @author 宁舒意
+     * @date 1:24 2024/7/9
+     * @param teacherId 教师id
+     * @param state 状态（草稿0，进行中1，已结束2）传null表示全部
+     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.vo.TeacherExamVO>>
+     */
+    @GetMapping("/exam/{teacherId}/{state}")
+    public BaseResult<List<TeacherExamVO>> exam(@PathVariable Integer teacherId,@PathVariable Integer state){
+        List<TeacherExamVO> teacherExamVOList = assignmentService.listExamByTid(teacherId,state);
+        return new BaseResult<>(200,"老师查看所有课程考试成功",teacherExamVOList);
+    }
 
 
     /**
@@ -141,25 +155,8 @@ public class AssignmentController {
      **/
     @PutMapping("/teacher")
     public BaseResult assignment(@RequestBody AssignmentAddDTO assignmentAddDTO) throws JsonProcessingException {
-        //state设置为0表示草稿
-        Assignment assignment =new Assignment();
-        if (assignmentAddDTO.getAssignmentId() != null) {
-            //表示编辑
-         assignment =assignmentService.getById(assignmentAddDTO.getAssignmentId());
-        }
-        AssignmentDTOMapper.INSTANCE.AddDTOtoAssignment(assignmentAddDTO,assignment);
-
-        assignment.setState(0);
-        Course course=courseService.getById(assignmentAddDTO.getCourseId());
-        assignment.setCourseName(course.getCourseName());
-        BigDecimal totalScore = BigDecimal.ZERO; // 初始化总和为0
-
-        for (AssignmentQuestionDTO dto : assignmentAddDTO.getContent()) {
-            totalScore = totalScore.add(dto.getQuestionScore()); // 将每个对象的 questionScore 字段值加到总和中
-        }
-        assignment.setScore(totalScore);
-        assignmentService.save(assignment);
-        return new BaseResult(200,"添加或编辑作业考试成功",assignment.getId());
+       Integer assignmentId = assignmentService.saveAssignAndQuestion(assignmentAddDTO);
+        return new BaseResult(200,"添加或编辑作业考试成功",assignmentId);
     }
 
 
@@ -277,7 +274,6 @@ public class AssignmentController {
         StudentAssignDetailVO studentAssignDetailVO =studentAssignmentService.geStuAssignDetail(studentAssignmentId);
         return  new BaseResult<>(200,"获取成功",studentAssignDetailVO);
     }
-
 
 
 

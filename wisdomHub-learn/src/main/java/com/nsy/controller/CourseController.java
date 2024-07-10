@@ -5,15 +5,18 @@ import com.nsy.model.BaseResult;
 import com.nsy.model.dto.CourseSetClassDTO;
 import com.nsy.model.pojo.Chapter;
 import com.nsy.model.pojo.Course;
+import com.nsy.model.pojo.Question;
 import com.nsy.model.pojo.TeacherCourse;
 import com.nsy.model.vo.StudyRecordVO;
-import com.nsy.service.ChapterService;
-import com.nsy.service.CourseService;
-import com.nsy.service.StudentCourseService;
-import com.nsy.service.TeacherCourseService;
+import com.nsy.service.*;
+import com.nsy.util.xunfei.text_moderation.TextMain;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -22,6 +25,7 @@ import java.util.List;
  * @description: TODO
  * @date: 2024/6/10 21:14
  */
+@Slf4j
 @RestController
 @RequestMapping("/course")
 public class CourseController {
@@ -38,6 +42,9 @@ public class CourseController {
 
     @Autowired
     private TeacherCourseService teacherCourseService;
+
+    @DubboReference
+    private AIDubboService aiDubboService;
 
     /**
      * 设置哪些班学习那个课程
@@ -73,7 +80,23 @@ public class CourseController {
     public BaseResult<List<Course>> courses(@PathVariable Integer teacherId){
         List<Course> courseList = courseService.listByTeacherId(teacherId);
         return new BaseResult(200,"获取我教的课程成功",courseList);
+
+
     }
+
+    /**
+     * 教师：获取课程详情
+     * @author 宁舒意
+     * @date 21:40 2024/7/8
+     * @param courseId 课程id
+     * @return com.nsy.model.BaseResult<com.nsy.model.pojo.Course>
+     */
+    @GetMapping("detail/{courseId}")
+    public BaseResult<Course> course(@PathVariable Integer courseId){
+        Course course =courseService.getById(courseId);
+        return new BaseResult<>(200,"获取课程详情",course);
+    }
+
 
 
     //课程管理
@@ -144,40 +167,40 @@ public class CourseController {
      * 教师：添加章节
      * @author 宁舒意
      * @date 8:22 2024/5/27
-     * @param chapterList 章节集合
-     * @return com.nsy.model.BaseResult
+     * @param chapter 章节集合
+     * @return com.nsy.BaseResult<java.util.List<java.lang.String>> 若有文本违规，则返回违规问题
      **/
     @PutMapping("/chapter")
-    public BaseResult addChapters(@RequestBody List<Chapter> chapterList){
-        for (Chapter chapter : chapterList) {
-            chapterService.save(chapter);
+    public BaseResult<List<String>> addChapters(@RequestBody Chapter chapter) throws Exception {
+        List<String> violations = TextMain.getViolations(chapter.getContent());
+
+        if(violations != null && chapter.getType().equals("text")){
+            System.out.println("*******************文本不合规***************");
+            return new BaseResult<>(400, "上传文本违规", violations);
         }
+
+        chapterService.save(chapter);
         return new BaseResult<>(200,"添加章节成功");
-
-
     }
-
 
     /**
      * 教师：修改章节
      * @author 宁舒意
      * @date 8:23 2024/5/27
-     * @param chapterList  章节集合
-     * @return com.nsy.model.BaseResult
+     * @param chapter  章节集合
+     * @return com.nsy.BaseResult<java.util.List<java.lang.String>> 若有文本违规，则返回违规问题
      **/
     @PutMapping("/chapter/update")
-    public BaseResult putChapters(@RequestBody List<Chapter> chapterList){
-        for (Chapter chapter : chapterList) {
-            Chapter existingChapter = chapterService.getById(chapter.getId()); // 假设有获取章节的方法
-            if (existingChapter == null) {
-                chapterService.save(chapter); // 插入章节
-            } else {
-                chapterService.updateById(chapter); // 更新章节
-            }
-        }
-        return new BaseResult<>(200,"修改章节成功");
-    }
+    public BaseResult<List<String>> putChapters(@RequestBody Chapter chapter) throws Exception {
+        List<String> violations = TextMain.getViolations(chapter.getContent());
 
+        if(violations != null && chapter.getType().equals("text")){
+            System.out.println("*******************文本不合规***************");
+            return new BaseResult<>(400, "上传文本违规", violations);
+        }
+            chapterService.updateById(chapter); // 更新章节
+        return new BaseResult<>(200, "修改章节成功");
+    }
 
     /**
      * 教师：删除章节
@@ -194,6 +217,25 @@ public class CourseController {
 
 
     /**
+     * 教师：根据章节标题内容生成知识图谱（这里前端nginx要配置一个最大请求体大小，否则报错413）
+     * @author 宁舒意
+     * @date 16:34 2024/7/9
+     * @param question 文字
+     * @return com.nsy.model.BaseResult
+     */
+    @PutMapping("/create-knowledge-graph")
+    public BaseResult createKnowledgeGraph(@RequestParam String question) throws IOException {
+        aiDubboService.createKnowledgeGraph(question);
+        return new BaseResult(200,"成功");
+    }
+
+    @PutMapping("/create-mindMap")
+    public BaseResult createMindMap(@RequestParam String question){
+        String answer=aiDubboService.createMindMap(question);
+        return new BaseResult(200,"生成的思维导图",answer);
+    }
+
+    /**
      * 学生：学习记录
      * @author 宁舒意
      * @date 11:23 2024/5/17
@@ -203,8 +245,7 @@ public class CourseController {
      **/
     @GetMapping("/study-record")
     public BaseResult<StudyRecordVO> studyRecord(@RequestParam int studentId, @RequestParam int courseId){
-        StudyRecordVO studyRecordVO =new StudyRecordVO();
-
+        StudyRecordVO studyRecordVO =courseService.getStudentRecordVO( studentId,courseId);
         return new BaseResult(200,"获取学习记录成功",studyRecordVO);
     }
 

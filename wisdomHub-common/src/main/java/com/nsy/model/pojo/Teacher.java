@@ -17,21 +17,25 @@ public class Teacher implements Serializable {
     /**
      * 主键id
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(type = IdType.AUTO)
     private Integer id;
 
     /**
      * 学校id
      */
-    @TableField(value = "school_id")
     private Integer schoolId;
 
     /**
      * 工号
      */
-    @TableField(value = "tno")
     private String tno;
+
+    /**
+     * 名字
+     */
+    private String name;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
 }

@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -109,6 +110,15 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
             "           and assignment.type =#{type}\n")
     List<StudentSubmissionVO> listSubmissionByAll(Integer assignmentId,Integer type);
 
+
+
+    @Select(" SELECT AVG(student_score) \n" +
+            "    FROM student_assignment \n" +
+            "    WHERE course_id = #{courseId} \n" +
+            "    AND student_id = #{studentId} " +
+            "    and type =#{type}" +
+            "    and state = 2")
+    BigDecimal getAvg(Integer studentId, Integer courseId,Integer type);
 
 
 

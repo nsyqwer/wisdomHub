@@ -86,6 +86,20 @@ public class Assignment implements Serializable {
     @TableField(value ="exam_time" )
     private Integer examTime;
 
+
+    /**
+     * 创建者id
+     **/
+    @TableField(value ="creator_id" )
+    private Integer creatorId;
+
+
+    /**
+     * 创建者名字
+     **/
+    @TableField(value ="creator_name" )
+    private String creatorName;
+
     /**
      * class_list,发放作业的对象
     **/
