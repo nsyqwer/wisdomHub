@@ -2,10 +2,7 @@ package com.nsy.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.nsy.model.dto.AssignmentAddDTO;
-import com.nsy.model.dto.AssignmentPublishDTO;
-import com.nsy.model.dto.AssignmentQuestionDTO;
-import com.nsy.model.dto.TeacherAssignmentDTO;
+import com.nsy.model.dto.*;
 import com.nsy.model.pojo.Assignment;
 import com.nsy.model.vo.MyAssignmentVO;
 import com.nsy.model.vo.TeacherAssignVO;
@@ -50,4 +47,12 @@ public interface AssignmentService extends IService<Assignment> {
     Integer saveAssignAndQuestion(AssignmentAddDTO assignmentAddDTO) throws JsonProcessingException;
 
     List<TeacherExamVO> listExamByTid(Integer teacherId,Integer state);
+
+    /**
+     * ai智能批阅一个班级
+     * @author 宁舒意
+     * @date 4:02 2024/7/11
+     * @param correctAssignmentDTO
+     */
+    void aiCorrect(CorrectAssignmentDTO correctAssignmentDTO) throws JsonProcessingException;
 }

@@ -5,7 +5,9 @@ import com.nsy.model.pojo.Mistake;
 import com.nsy.model.vo.MistakeDetailVO;
 import com.nsy.model.vo.MistakeVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Select;
+import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
@@ -32,6 +34,7 @@ public interface MistakeMapper extends BaseMapper<Mistake> {
     @Select("select question.id,question.course_name,type,title " +
             "from mistake join question  on mistake.question_id = question.id " +
             "where student_id =#{studentId}")
+    @Result(property = "questionId",column = "id")
     List<MistakeVo> getMistakeVoBySid(int studentId);
 
 

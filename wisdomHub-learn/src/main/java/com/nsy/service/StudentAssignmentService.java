@@ -23,9 +23,6 @@ import java.util.List;
 public interface StudentAssignmentService extends IService<StudentAssignment> {
     public List<Integer> findStudentIdsByClassIds(List<Integer> classIds);
 
-
-
-
     void writeAssignment(StudentAssignmentDTO studentAssignmentDTO) throws JsonProcessingException;
 
 

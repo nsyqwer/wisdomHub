@@ -68,6 +68,12 @@ public class Chapter implements Serializable {
     @TableField(value = "type")
     private String type;
 
+    /**
+     *  知识点
+    **/
+    @TableField(value = "knowledge")
+    private String knowledge;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

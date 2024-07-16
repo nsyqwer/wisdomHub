@@ -18,7 +18,7 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-07-09T23:07:18+0800",
+    date = "2024-07-12T19:48:16+0800",
     comments = "version: 1.5.0.Final, compiler: javac, environment: Java 1.8.0_362 (BellSoft)"
 )
 public class AssignmentDTOMapperImpl implements AssignmentDTOMapper {
@@ -87,6 +87,7 @@ public class AssignmentDTOMapperImpl implements AssignmentDTOMapper {
         catch ( JsonProcessingException e ) {
             throw new RuntimeException( e );
         }
+        teacherAssignVO.setAssignmentId( assignment.getId() );
         teacherAssignVO.setTitle( assignment.getTitle() );
         teacherAssignVO.setBeginDate( assignment.getBeginDate() );
         if ( assignment.getEndDate() != null ) {
@@ -129,6 +130,7 @@ public class AssignmentDTOMapperImpl implements AssignmentDTOMapper {
             throw new RuntimeException( e );
         }
         teacherExamVO.setState( assignState( assignment.getState() ) );
+        teacherExamVO.setCourseId( assignment.getCourseId() );
         teacherExamVO.setCourseName( assignment.getCourseName() );
         teacherExamVO.setTitle( assignment.getTitle() );
         teacherExamVO.setCreatorName( assignment.getCreatorName() );
@@ -169,6 +171,7 @@ public class AssignmentDTOMapperImpl implements AssignmentDTOMapper {
 
         TeacherExamVO teacherExamVO = new TeacherExamVO();
 
+        teacherExamVO.setCourseId( assignment.getCourseId() );
         teacherExamVO.setCourseName( assignment.getCourseName() );
         teacherExamVO.setTitle( assignment.getTitle() );
         if ( assignment.getState() != null ) {

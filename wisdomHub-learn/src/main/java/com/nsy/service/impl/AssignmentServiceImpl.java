@@ -4,22 +4,22 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nsy.constant.AssignmentStateEnum;
 import com.nsy.constant.AssignmentTypeEnum;
 import com.nsy.constant.QueryAssignmentEnum;
 import com.nsy.constant.StudentAssignmentEnum;
 import com.nsy.mapper.*;
 import com.nsy.mapper.mapstruct.AssignmentDTOMapper;
-import com.nsy.model.dto.AssignmentAddDTO;
-import com.nsy.model.dto.AssignmentPublishDTO;
-import com.nsy.model.dto.AssignmentQuestionDTO;
-import com.nsy.model.dto.TeacherAssignmentDTO;
+import com.nsy.model.dto.*;
 import com.nsy.model.pojo.*;
 import com.nsy.model.pojo.Class;
 import com.nsy.model.vo.MyAssignmentVO;
 import com.nsy.model.vo.TeacherAssignVO;
 import com.nsy.model.vo.TeacherExamVO;
+import com.nsy.service.AIDubboService;
 import com.nsy.service.AssignmentService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +58,9 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
 
     @Autowired
     private QuestionMapper questionMapper;
+
+    @DubboReference
+    private AIDubboService aiDubboService;
 
     @Override
     public List<AssignmentQuestionDTO> getQuestion(String contentJson) throws IOException {
@@ -123,10 +126,10 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
         //这里的content是assignmentQuestion的数组，发布的时候答案和答案解析不能传过去
         List<AssignmentQuestionDTO> assignmentQuestionDTOList = getQuestion(assignment.getContent());
 
-        assignmentQuestionDTOList.forEach(dto -> {
-            dto.setAnswer(null);
-            dto.setAnswerAnalysis(null);
-        });
+//        assignmentQuestionDTOList.forEach(dto -> {
+//            dto.setAnswer(null);
+//            dto.setAnswerAnalysis(null);
+//        });
         String json = ListToJson(assignmentQuestionDTOList);
 
         for (Integer studentId : studentIds) {
@@ -146,13 +149,14 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
 
     @Override
     public List<TeacherAssignVO> getTeacherAssignVO(TeacherAssignmentDTO teaCherAssignmentDTO) {
+        int state =teaCherAssignmentDTO.getState();
        List<Assignment>assignmentList =  assignmentMapper.selectList(new QueryWrapper<Assignment>()
                .eq("course_id",teaCherAssignmentDTO.getCourseId())
-               .eq("state",teaCherAssignmentDTO.getState())
+               .eq("state",state)
                .eq("type",teaCherAssignmentDTO.getType()));
 
         int courseId =teaCherAssignmentDTO.getCourseId();
-        int state =teaCherAssignmentDTO.getState();
+
 
 
        List<TeacherAssignVO> teacherAssignVOList=new ArrayList<>();
@@ -164,13 +168,16 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
             int waitCorrectNum=0;
             int finishedNum=0;
             int allNum=0;
-            //遍历每个班级
-            for (Class aClass : teacherAssignVO.getClassList()) {
-                unCommittedNum+=studentAssignmentMapper.countTeaAssign(aClass.getId(),courseId, state, StudentAssignmentEnum.UNCOMMITTED.getCode());
-                waitCorrectNum+=studentAssignmentMapper.countTeaAssign(aClass.getId(), courseId, state, StudentAssignmentEnum.WaitCorrect.getCode());
-                finishedNum+=studentAssignmentMapper.countTeaAssign(aClass.getId(), courseId, state, StudentAssignmentEnum.FINISHED.getCode());
+            if(state==1||state==2){
+                //遍历每个班级
+                for (Class aClass : teacherAssignVO.getClassList()) {
+                    unCommittedNum+=studentAssignmentMapper.countTeaAssign(aClass.getId(),courseId, state, StudentAssignmentEnum.UNCOMMITTED.getCode());
+                    waitCorrectNum+=studentAssignmentMapper.countTeaAssign(aClass.getId(), courseId, state, StudentAssignmentEnum.WaitCorrect.getCode());
+                    finishedNum+=studentAssignmentMapper.countTeaAssign(aClass.getId(), courseId, state, StudentAssignmentEnum.FINISHED.getCode());
+                }
+                allNum =unCommittedNum+waitCorrectNum+finishedNum;
             }
-            allNum =unCommittedNum+waitCorrectNum+finishedNum;
+
 
             teacherAssignVO.setUnCommittedNum(unCommittedNum);
             teacherAssignVO.setWaitCorrectNum(waitCorrectNum);
@@ -239,6 +246,43 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
 
         return teacherExamVOList;
     }
+
+
+    /**
+     * 答案解析有可能为空
+     * ai批阅完不要改状态为已批阅，因为还需要教师的二次批阅
+    **/
+    @Override
+    public void aiCorrect(CorrectAssignmentDTO correctAssignmentDTO) throws JsonProcessingException {
+        //先把作业答案和解析查到
+        Integer teacherId =correctAssignmentDTO.getTeacherId();
+//        Assignment assignment = assignmentMapper.selectById(correctAssignmentDTO.getAssignmentId());
+        List<StudentAssignment> studentAssignmentList =studentAssignmentMapper
+                .listByAIDCIDType(correctAssignmentDTO.getAssignmentId(),correctAssignmentDTO.getClassId(),
+                        StudentAssignmentEnum.WaitCorrect.getCode(),AssignmentTypeEnum.EXAM.getCode());
+        for (StudentAssignment studentAssignment : studentAssignmentList) {
+            ObjectMapper objectMapper =new ObjectMapper();
+            String answerJson =aiDubboService.correct(studentAssignment.getContent());
+            studentAssignment.setContent(answerJson);
+            //算总分数
+            List<AssignmentQuestionDTO> assignmentQuestionDTOList =
+                    Arrays.asList(objectMapper.readValue(studentAssignment.getContent(), AssignmentQuestionDTO[].class));
+            BigDecimal studentTotalScore = BigDecimal.ZERO; // 初始化总和为0
+
+
+            for (AssignmentQuestionDTO dto : assignmentQuestionDTOList) {
+                studentTotalScore = studentTotalScore.add(dto.getStudentScore()); // 将每个对象的 学生得分字段值加到总和中
+            }
+            studentAssignment.setStudentScore(studentTotalScore);
+            studentAssignment.setTeacherId(teacherId);
+            studentAssignmentMapper.updateById(studentAssignment);
+        }
+
+    }
+
+
+
+
 }
 
 

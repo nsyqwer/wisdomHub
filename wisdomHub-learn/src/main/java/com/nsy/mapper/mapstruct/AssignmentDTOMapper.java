@@ -68,11 +68,15 @@ public interface AssignmentDTOMapper {
     @Named("mapClassList")
     default List<Class> mapClassList(String classListJson) throws JsonProcessingException {
         // 使用 JSON 序列化将 List 转换为 JSON 字符串
+        if(classListJson==null){
+            return null;
+        }
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(classListJson, new TypeReference<List<Class>>() {});
     }
 
     @Mapping(source = "classList", target = "classList", qualifiedByName = "mapClassList")
+    @Mapping(source = "id", target = "assignmentId")
     void assignPojoToVo(Assignment assignment, @MappingTarget TeacherAssignVO teacherAssignVO);
 
 
@@ -105,6 +109,7 @@ public interface AssignmentDTOMapper {
     @Mapping(source = "id",target = "examId")
     @Mapping(source = "content", target = "questionNum", qualifiedByName = "getQuestionNum")
     @Mapping(source = "state", target = "state", qualifiedByName = "assignState")
+    @Mapping(source = "courseId", target = "courseId")
     void assignToExamVO(Assignment assignment, @MappingTarget TeacherExamVO teacherExamVO);
 
     void listAssignToExamVO(List<Assignment> assignmentList,@MappingTarget List<TeacherExamVO> teacherExamVOList);

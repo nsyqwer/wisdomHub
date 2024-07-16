@@ -12,11 +12,15 @@ import lombok.Data;
 @Data
 public class TeacherExamVO {
 
+
     /**
      * 考试id
     **/
     private Integer examId;
-
+    /**
+     * 课程id
+    **/
+    private Integer courseId;
     /**
      * 课程名字
      */

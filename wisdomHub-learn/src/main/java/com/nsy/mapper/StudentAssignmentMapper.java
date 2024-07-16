@@ -22,6 +22,16 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
     @Select("SELECT id FROM student WHERE class_id IN (${classIds})")
     List<Integer> findStudentIdsByClassIds(@Param("classIds") String classIds);
 
+    @Select("select * FROM student_assignment\n" +
+            "join student on student_assignment.student_id=student.id\n" +
+            "where student.class_id =#{classId}\n" +
+            "AND assignment_id=#{assignmentId}\n" +
+            "AND state =#{state}\n" +
+            "AND type =#{type}")
+    List<StudentAssignment> listByAIDCIDType(@Param("assignmentId")Integer assignmentId,@Param("classId")Integer classId,
+                                             @Param("state")Integer state,@Param("type")Integer type);
+
+
 
     /**
      * 查询所有作业
@@ -31,7 +41,7 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
      * @param courseId
      * @return java.util.List<com.nsy.model.vo.MyAssignmentVO>
      */
-    @Select("select assignment_id,end_date,title,student_assignment.state from student_assignment\n" +
+    @Select("select assignment_id,end_date,assignment.title,student_assignment.state from student_assignment\n" +
             "        join assignment on student_assignment.assignment_id = assignment.id\n" +
             "        where student_id =#{studentId}\n" +
             "        and assignment.course_id  =#{courseId} " +
@@ -47,11 +57,11 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
      * @param courseId
      * @return java.util.List<com.nsy.model.vo.MyAssignmentVO>
      */
-    @Select("select assignment_id,end_date,title,student_assignment.state from student_assignment\n" +
+    @Select("select assignment_id,end_date,assignment.title,student_assignment.state from student_assignment\n" +
             "        join assignment on student_assignment.assignment_id = assignment.id\n" +
             "        where student_id =#{studentId}\n" +
             "        and assignment.course_id  =#{courseId}" +
-            "        and student_assignment.state=0 OR student_assignment.state=1 " +
+            "        and student_assignment.state=2 " +
             "        and assignment.type=#{type}")
     List<MyAssignmentVO> listFinished(int studentId, int courseId,int type);
 
@@ -64,11 +74,11 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
      * @param courseId
      * @return java.util.List<com.nsy.model.vo.MyAssignmentVO>
      */
-    @Select("select assignment_id,end_date,title,student_assignment.state from student_assignment\n" +
+    @Select("select assignment_id,end_date,assignment.title,student_assignment.state from student_assignment\n" +
             "        join assignment on student_assignment.assignment_id = assignment.id\n" +
             "        where student_id =#{studentId}\n" +
             "        and assignment.course_id  =#{courseId}" +
-            "        and student_assignment.state=2 " +
+            "        and student_assignment.state=0 OR student_assignment.state=1 " +
             "        and assignment.type=#{type}")
     List<MyAssignmentVO> listUnFinished(int studentId, int courseId,int type);
 

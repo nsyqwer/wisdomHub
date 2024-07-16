@@ -278,4 +278,37 @@ public class AssignmentController {
 
 
 
+    /**
+     * ai智能批阅一个班级,这里批阅完之后，前端直接请求一次这个班级的该次作业批阅结果即可
+     * 返回知识薄弱点，易错题目，向教师和学生，反应薄弱项
+     * 计数易错题top3，哪3题错的人数最多，然后通过知识图谱找出每道题目所涉及的知识点，ai生成该题目涉及知识点所需要注意的地方
+     * 并且通过知识图谱返回类似的题目提供给老师上课，给学生写
+     *
+     **/
+
+    /**
+     * ai智能批阅一个班级,这里批阅完之后，前端重新请求一次这个班级的该次作业批阅结果即可
+     * @author 宁舒意
+     * @date 21:55 2024/7/11
+     * @param correctAssignmentDTO
+     * @return com.nsy.model.BaseResult
+     */
+    @PutMapping("/ai-correct")
+    public BaseResult aiCorrect(@RequestBody  CorrectAssignmentDTO correctAssignmentDTO) throws JsonProcessingException {
+        assignmentService.aiCorrect(correctAssignmentDTO);
+        return new BaseResult(200,"智能批阅成功");
+    }
+
+    /**
+     *根据classId和assignmentId分析班级这次考试整体情况
+     *
+    **/
+
+
+
+
+
+
+
+
 }

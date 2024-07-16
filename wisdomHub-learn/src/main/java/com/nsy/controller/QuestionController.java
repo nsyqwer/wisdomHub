@@ -1,16 +1,27 @@
 package com.nsy.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nsy.model.BaseResult;
+import com.nsy.model.pojo.Class;
+import com.nsy.model.pojo.Course;
 import com.nsy.model.pojo.Mistake;
 import com.nsy.model.pojo.Question;
 import com.nsy.model.vo.MistakeDetailVO;
 import com.nsy.model.vo.MistakeVo;
+import com.nsy.service.AIDubboService;
+import com.nsy.service.CourseService;
 import com.nsy.service.MistakeService;
 import com.nsy.service.QuestionService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +43,12 @@ public class QuestionController {
     @Autowired
     private MistakeService mistakeService;
 
+
+    @DubboReference
+    private AIDubboService aiDubboService;
+
+    @Autowired
+    private CourseService courseService;
     /**
      * 教师：查看该课程所有题目
      * @author 宁舒意
@@ -56,6 +73,8 @@ public class QuestionController {
      */
     @PutMapping("")
     public BaseResult question(@RequestBody Question question){
+        Course course =courseService.getById(question.getCourseId());
+        question.setCourseName(course.getCourseName());
         questionService.save(question);
         return new BaseResult(200,"添加成功");
     }
@@ -86,6 +105,8 @@ public class QuestionController {
      **/
     @PutMapping("/mix-up")
     public BaseResult questions(@RequestBody Question question){
+        Course course =courseService.getById(question.getCourseId());
+        question.setCourseName(course.getCourseName());
         questionService.updateById(question);
         return new BaseResult(200,"修改成功");
     }
@@ -153,14 +174,57 @@ public class QuestionController {
     /**
      * 学生：查看错题详情
      * @author 宁舒意
-     * @date 15:49 2024/5/17
-     * @param mistakeId 错题id
+     * @date 19:57 2024/7/14
+     * @param questionId
      * @return com.nsy.model.BaseResult<com.nsy.model.vo.MistakeDetailVO>
-     **/
-    @GetMapping("/mistake-detail/{mistakeId}")
-    public BaseResult<MistakeDetailVO> mistakeDetail(@PathVariable int mistakeId){
-        MistakeDetailVO mistakeDetailVO =mistakeService.getDetail(mistakeId);
-        return new BaseResult(200,"获取错题详情成功",mistakeDetailVO);
+     */
+    @GetMapping("/mistake-detail/{questionId}")
+    public BaseResult<MistakeDetailVO> mistakeDetail(@PathVariable int questionId){
+        Question question =questionService.getById(questionId);
+        return new BaseResult(200,"获取错题详情成功",question);
     }
+
+
+    /**
+     * AI生成题目
+     * @author 宁舒意
+     * @date 11:31 2024/7/12
+     * @param material 材料
+     * @param t 难度系数
+     * @param n1 选择题数
+     * @param n2 填空题数
+     * @param n3 问答题数
+     * @return com.nsy.model.BaseResult<java.lang.String>
+     */
+    @GetMapping("generatedQuestions")
+    public BaseResult<String> AIGeneratedQuestions(String material,String t,String n1,String n2,String n3) throws IOException {
+        String answer =aiDubboService.createQuestion(material,t,n1,n2,n3);
+        return new BaseResult(200,"AI生成题目成功",answer);
+    }
+
+
+
+
+    /**
+     * 根据输入推荐错题
+     * @author 宁舒意
+     * @date 2:52 2024/7/16
+     * @param query 随便传，不能为空
+     * @return com.nsy.model.BaseResult<java.util.List<com.nsy.model.pojo.Question>>
+     */
+    @GetMapping("/createQuestion")
+    public BaseResult<List<Question>> recommendQuestion(String query) throws JsonProcessingException {
+// 获取查询结果
+        List<Question> questionList = questionService.list(new QueryWrapper<Question>().last("LIMIT 3"));
+        ObjectMapper objectMapper =new ObjectMapper();
+        String json = objectMapper.writeValueAsString(questionList);
+        System.out.println(json);
+        String questionJson = aiDubboService.recommendQuestion(json);
+       // List<Question> questions =objectMapper.readValue(questionJson,new TypeReference<List<Question>>() {});
+
+
+        return new BaseResult<>(200,"推荐错题成功",questionList);
+    }
+
 
 }

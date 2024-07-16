@@ -1,8 +1,11 @@
 package com.nsy.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nsy.model.BaseResult;
 import com.nsy.model.dto.CourseSetClassDTO;
+import com.nsy.model.dto.KnowledgeDTO;
 import com.nsy.model.pojo.Chapter;
 import com.nsy.model.pojo.Course;
 import com.nsy.model.pojo.Question;
@@ -13,6 +16,7 @@ import com.nsy.util.xunfei.text_moderation.TextMain;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -172,12 +176,12 @@ public class CourseController {
      **/
     @PutMapping("/chapter")
     public BaseResult<List<String>> addChapters(@RequestBody Chapter chapter) throws Exception {
-        List<String> violations = TextMain.getViolations(chapter.getContent());
+        //List<String> violations = TextMain.getViolations(chapter.getContent());
 
-        if(violations != null && chapter.getType().equals("text")){
-            System.out.println("*******************文本不合规***************");
-            return new BaseResult<>(400, "上传文本违规", violations);
-        }
+       // if(violations != null && chapter.getType().equals("text")){
+          //  System.out.println("*******************文本不合规***************");
+           // return new BaseResult<>(400, "上传文本违规", violations);
+        //}
 
         chapterService.save(chapter);
         return new BaseResult<>(200,"添加章节成功");
@@ -217,21 +221,70 @@ public class CourseController {
 
 
     /**
-     * 教师：根据章节标题内容生成知识图谱（这里前端nginx要配置一个最大请求体大小，否则报错413）
+     * 教师：根据课程章节内容生成知识图谱
      * @author 宁舒意
-     * @date 16:34 2024/7/9
-     * @param question 文字
+     * @date 11:40 2024/7/14
+     * @param courseId
      * @return com.nsy.model.BaseResult
      */
     @PutMapping("/create-knowledge-graph")
-    public BaseResult createKnowledgeGraph(@RequestParam String question) throws IOException {
-        aiDubboService.createKnowledgeGraph(question);
+    public BaseResult createKnowledgeGraph(Integer courseId) throws IOException {
+
+        List<Chapter> chapterList = chapterService.list(new QueryWrapper<Chapter>().eq("course_id",courseId).eq("type","text"));
+        // 遍历章节列表
+        StringBuilder combinedContent = new StringBuilder();
+        for (Chapter chapter : chapterList) {
+            // 获取每个章节的内容并追加到StringBuilder
+            combinedContent.append(chapter.getContent());
+        }
+
+        // 获取最终的拼接结果
+        String finalContent = combinedContent.toString();
+
+        aiDubboService.createKnowledgeGraph(finalContent,courseId);
+
+
+
+
         return new BaseResult(200,"成功");
     }
 
-    @PutMapping("/create-mindMap")
-    public BaseResult createMindMap(@RequestParam String question){
-        String answer=aiDubboService.createMindMap(question);
+    /**
+     * 根据课程id获取知识图谱
+     * @author 宁舒意
+     * @date 10:37 2024/7/14
+     * @param courseId 课程id
+     * @return com.nsy.model.BaseResult
+     */
+    @GetMapping("/get-knowledge-graph/{courseId}")
+    public BaseResult getKnowledgeGraph(@PathVariable Integer courseId){
+        KnowledgeDTO knowledgeDTO =aiDubboService.getKnowledgeByCID(courseId);
+        return new BaseResult(200,"成功",knowledgeDTO);
+    }
+
+
+
+
+    /**
+     * 根据课程id创建思维导图
+     * @author 宁舒意
+     * @date 20:41 2024/7/14
+     * @param courseId
+     * @return com.nsy.model.BaseResult
+     */
+    @GetMapping("/create-mindMap/{courseId}")
+    public BaseResult createMindMap(@PathVariable Integer courseId) throws JsonProcessingException {
+        List<Chapter> chapterList = chapterService.list(new QueryWrapper<Chapter>().eq("course_id",courseId).eq("type","text"));
+        // 遍历章节列表
+        StringBuilder combinedContent = new StringBuilder();
+        for (Chapter chapter : chapterList) {
+            // 获取每个章节的内容并追加到StringBuilder
+            combinedContent.append(chapter.getContent());
+        }
+
+        // 获取最终的拼接结果
+        String finalContent = combinedContent.toString();
+        String answer=aiDubboService.createMindMap(finalContent);
         return new BaseResult(200,"生成的思维导图",answer);
     }
 
@@ -248,5 +301,37 @@ public class CourseController {
         StudyRecordVO studyRecordVO =courseService.getStudentRecordVO( studentId,courseId);
         return new BaseResult(200,"获取学习记录成功",studyRecordVO);
     }
+
+
+
+    /**
+     * 根据输入，创建ppt
+     * @author 宁舒意
+     * @date 1:57 2024/7/12
+     * @param query 根据输入生成ppt
+     * @return com.nsy.model.BaseResult
+     */
+    @GetMapping("/createPPT")
+    public BaseResult createPPT(String query) throws IOException, InterruptedException {
+        String URL = aiDubboService.createPPT(query);
+        return new BaseResult(200,"根据输入生成ppt成功",URL);
+    }
+
+
+
+    /**
+     * ai智能推荐学习路径
+     * @author 宁舒意
+     * @date 2:08 2024/7/16
+     * @param query 随便传什么
+     * @return com.nsy.model.BaseResult
+     */
+    @GetMapping("/createPath")
+    public BaseResult createPath(String query){
+        String pathString = aiDubboService.createPath("学java中");
+        return new BaseResult(200,"智能路径推荐",pathString);
+    }
+
+
 
 }
