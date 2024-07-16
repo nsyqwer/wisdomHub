@@ -109,7 +109,7 @@ public class WebFaceDetect {
             int x = faceNode.get("x").asInt();
             int y = faceNode.get("y").asInt();
 
-            Path path = Paths.get("D:/");
+            Path path = Paths.get("");
             BufferedImage image = null;
             if(imagePath1.contains("http")){
                 URL url = new URL(imagePath1);
@@ -221,7 +221,7 @@ public class WebFaceDetect {
     public static String detection_image;
     // 获取绘制人脸后的图片
     public static void getImage(String text) throws Exception {
-        Path path = Paths.get("D:");
+        Path path = Paths.get("");
         BufferedImage image = null;
         if(imagePath1.contains("http")){
             System.out.println("66666666666666666图片：" + imagePath1);
