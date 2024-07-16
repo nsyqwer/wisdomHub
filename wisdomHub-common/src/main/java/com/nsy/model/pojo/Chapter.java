@@ -62,6 +62,18 @@ public class Chapter implements Serializable {
     @TableField(value = "content")
     private String content;
 
+    /**
+     * 任务点类型（ppt video text）
+     */
+    @TableField(value = "type")
+    private String type;
+
+    /**
+     * 知识点（json数据）
+    **/
+    @TableField(value = "knowledge")
+    private String knowledge;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

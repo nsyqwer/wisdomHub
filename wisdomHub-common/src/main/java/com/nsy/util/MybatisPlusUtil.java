@@ -1,6 +1,5 @@
 package com.nsy.util;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.omg.CORBA.SystemException;
 
 import java.util.HashMap;
 import java.util.Map;

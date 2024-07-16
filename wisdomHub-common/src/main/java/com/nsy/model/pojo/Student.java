@@ -19,8 +19,11 @@ public class Student implements Serializable {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-
-
+    /**
+     * 学生姓名
+    **/
+    @TableField(value = "name")
+    private String name;
 
     /**
      * 学校id

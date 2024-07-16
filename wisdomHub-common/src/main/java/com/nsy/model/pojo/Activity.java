@@ -52,14 +52,12 @@ public class Activity implements Serializable {
      * 开始时间
      */
     @TableField(value = "begin_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime beginTime;
 
     /**
      * 结束时间
      */
     @TableField(value = "end_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
 
     /**

@@ -1,8 +1,8 @@
 package com.nsy.mapper;
 
-import com.nsy.model.pojo.Activity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.nsy.model.vo.ActivityTypeVo;
+import com.nsy.model.pojo.Activity;
+import com.nsy.model.vo.ActivityMessageVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -17,8 +17,8 @@ import java.util.List;
 @Mapper
 public interface ActivityMapper extends BaseMapper<Activity> {
 
-    @Select("select id, activity_type from activity where course_id = #{courseId} and class_id = #{classId}")
-    List<ActivityTypeVo> getByAllType(Integer courseId, Integer classId);
+    @Select("select id, activity_type, title, begin_time, end_time from activity where course_id = #{courseId} and class_id = #{classId}")
+    List<ActivityMessageVo> getAllMessage(Integer courseId, Integer classId);
 }
 
 

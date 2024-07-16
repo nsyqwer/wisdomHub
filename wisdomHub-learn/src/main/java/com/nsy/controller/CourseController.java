@@ -7,6 +7,8 @@ import com.nsy.model.pojo.Course;
 import com.nsy.model.vo.StudyRecordVO;
 import com.nsy.service.ChapterService;
 import com.nsy.service.CourseService;
+import com.nsy.util.xunfei.text_moderation.TextMain;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +21,7 @@ import java.util.List;
  * @description: TODO
  * @date: 2024/6/10 21:14
  */
+@Slf4j
 @RestController
 @RequestMapping("/course")
 public class CourseController {
@@ -120,38 +123,45 @@ public class CourseController {
      * 教师：添加章节
      * @author 宁舒意
      * @date 8:22 2024/5/27
-     * @param chapterList 章节集合
-     * @return com.nsy.model.BaseResult
+     * @param chapter 章节集合
+     * @return com.nsy.BaseResult<java.util.List<java.lang.String>> 若有文本违规，则返回违规问题
      **/
     @PutMapping("/chapter")
-    public BaseResult addChapters(@RequestBody List<Chapter> chapterList){
-        for (Chapter chapter : chapterList) {
-            chapterService.save(chapter);
+    public BaseResult<List<String>> addChapters(@RequestBody Chapter chapter) throws Exception {
+        List<String> violations = TextMain.getViolations(chapter.getContent());
+
+        if(violations != null && chapter.getType().equals("text")){
+            System.out.println("*******************文本不合规***************");
+            return new BaseResult<>(400, "上传文本违规", violations);
         }
+
+        chapterService.save(chapter);
         return new BaseResult<>(200,"添加章节成功");
-
-
     }
-
 
     /**
      * 教师：修改章节
      * @author 宁舒意
      * @date 8:23 2024/5/27
-     * @param chapterList  章节集合
-     * @return com.nsy.model.BaseResult
+     * @param chapter  章节集合
+     * @return com.nsy.BaseResult<java.util.List<java.lang.String>> 若有文本违规，则返回违规问题
      **/
     @PutMapping("/chapter/update")
-    public BaseResult putChapters(@RequestBody List<Chapter> chapterList){
-        for (Chapter chapter : chapterList) {
-            Chapter existingChapter = chapterService.getById(chapter.getId()); // 假设有获取章节的方法
-            if (existingChapter == null) {
-                chapterService.save(chapter); // 插入章节
-            } else {
-                chapterService.updateById(chapter); // 更新章节
-            }
+    public BaseResult<List<String>> putChapters(@RequestBody Chapter chapter) throws Exception {
+        List<String> violations = TextMain.getViolations(chapter.getContent());
+
+        if(violations != null && chapter.getType().equals("text")){
+            System.out.println("*******************文本不合规***************");
+            return new BaseResult<>(400, "上传文本违规", violations);
         }
-        return new BaseResult<>(200,"修改章节成功");
+
+        Chapter existingChapter = chapterService.getById(chapter.getId()); // 假设有获取章节的方法
+        if (existingChapter == null) {
+            chapterService.save(chapter); // 插入章节
+        } else {
+            chapterService.updateById(chapter); // 更新章节
+        }
+        return new BaseResult<>(200, "修改章节成功");
     }
 
 
@@ -183,5 +193,6 @@ public class CourseController {
 
         return new BaseResult(200,"获取学习记录成功",studyRecordVO);
     }
+
 
 }

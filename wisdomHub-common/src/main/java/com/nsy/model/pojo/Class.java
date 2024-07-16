@@ -26,6 +26,12 @@ public class Class implements Serializable {
     @TableField(value = "class_name")
     private String className;
 
+    /**
+     * 老师id
+     */
+    @TableField(value = "teacher_id")
+    private Integer teacherId;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

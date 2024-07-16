@@ -32,6 +32,12 @@ public class Teacher implements Serializable {
     @TableField(value = "tno")
     private String tno;
 
+    /**
+     * 老师名字
+    **/
+    @TableField(value = "name")
+    private String name;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

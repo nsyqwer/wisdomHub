@@ -6,6 +6,7 @@ import com.nsy.model.vo.MyAssignmentVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
      * @param courseId
      * @return java.util.List<com.nsy.model.vo.MyAssignmentVO>
      */
-    @Select("select assignment_id,end_date,title,student_assignment.state from student_assignment\n" +
+    @Select("select assignment_id,exam_end_time,title,student_assignment.state from student_assignment\n" +
             "        join assignment on student_assignment.assignment_id = assignment.id\n" +
             "        where student_id =#{studentId}\n" +
             "        and assignment.course_id  =#{courseId} " +
@@ -45,7 +46,7 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
      * @param courseId
      * @return java.util.List<com.nsy.model.vo.MyAssignmentVO>
      */
-    @Select("select assignment_id,end_date,title,student_assignment.state from student_assignment\n" +
+    @Select("select assignment_id, exam_end_time,title,student_assignment.state from student_assignment\n" +
             "        join assignment on student_assignment.assignment_id = assignment.id\n" +
             "        where student_id =#{studentId}\n" +
             "        and assignment.course_id  =#{courseId}" +
@@ -62,7 +63,7 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
      * @param courseId
      * @return java.util.List<com.nsy.model.vo.MyAssignmentVO>
      */
-    @Select("select assignment_id,end_date,title,student_assignment.state from student_assignment\n" +
+    @Select("select assignment_id, exam_end_time,title,student_assignment.state from student_assignment\n" +
             "        join assignment on student_assignment.assignment_id = assignment.id\n" +
             "        where student_id =#{studentId}\n" +
             "        and assignment.course_id  =#{courseId}" +
@@ -84,14 +85,20 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
     int countTeaAssign(int classId,  int courseId, int assignmentState, int studentAssignmentState);
 
 
+    @Update("update student_assignment " +
+            "set state = 2 " +
+            "where assignment_id = #{id}")
+    void updateStateByTest(Integer id);
 
+    @Select("select * " +
+            "from student_assignment " +
+            "where assignment_id = #{testId} and test_paper_images = #{images}")
+    StudentAssignment selectByImages(Integer testId, String images);
 
-
-
-
-
-
-
+    @Update("update student_assignment " +
+            "set student_score = #{studentScore}, content = #{content}, title = #{title}, student_id = #{studentId} " +
+            "where test_paper_images = #{testPaperImages} and assignment_id = #{assignmentId}")
+    void updateByImages(StudentAssignment sa);
 }
 
 

@@ -100,7 +100,6 @@ public class WebFaceCompare {
 
     //读取image
     private byte[] readImage(String imagePath) throws IOException {
-        System.out.println("这里的路径是：" + imagePath);
         if(imagePath.contains("https")){
             URL url = new URL(imagePath);
             try (InputStream in = url.openStream()) {
@@ -114,6 +113,7 @@ public class WebFaceCompare {
             }
         }
         else {
+            System.out.println(imagePath);
             InputStream is = new FileInputStream(imagePath);
             byte[] imageByteArray1 = FileUtil.read(imagePath);
             //return is.readAllBytes();
@@ -122,6 +122,8 @@ public class WebFaceCompare {
     }
 
     public ResponseData faceContrast(String imageFirstUrl, String imageSecondUrl) throws Exception {
+
+        System.out.println("该文件地址：" + imageFirstUrl + " " + imageSecondUrl);
 
         String url = assembleRequestUrl(Property.requestUrl, Property.apiKey, Property.apiSecret);
 

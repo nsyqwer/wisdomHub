@@ -1,12 +1,21 @@
 server:
   port: 9082
 
+
 spring:
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+    time-zone: UTC
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 1000MB
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/wisdom_hub?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://localhost:3306/wisdom_hub?allowPublicKeyRetrieval=true&serverTimezone=UTC&useSSL=false
     username: root
     password: 123456
+
   application:
     name: wisdomHub-courseActivity
   cloud:

@@ -1,16 +1,20 @@
 package com.nsy.util;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @className: MyFileUtils
@@ -137,4 +141,159 @@ public class MyFileUtils {
         }
         return filename;
     }
+
+    /**
+     * 通过压缩包,上传并获取字符串，获取字符串
+    **/
+    public static List<List<String>> uploadUnzippedFiles(MultipartFile multipartFile) throws IOException {
+        Map<String, List<MyImageDate>> map = new HashMap<>();
+
+        List<MyPair<byte[], String>> biss = new ArrayList<>();
+
+        try (InputStream is = multipartFile.getInputStream();
+             ZipArchiveInputStream zais = new ZipArchiveInputStream(is)) {
+
+            ArchiveEntry entry;
+
+            while ((entry = zais.getNextEntry()) != null) {
+                if (!entry.isDirectory()) {
+                    String fileName = entry.getName();
+                    System.out.println("进行上传的文件名：" + fileName);
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[1024];
+                    int length;
+
+                    while ((length = zais.read(buffer)) > 0) {
+                        baos.write(buffer, 0, length);
+                    }
+
+                    biss.add(new MyPair<>(baos.toByteArray(), fileName));
+                }
+            }
+        }
+
+        for(MyPair<byte[], String> myPair: biss) {
+            String fileName = myPair.getValue();
+            byte[] fileContent = myPair.getKey();
+            System.out.println("进行上传的文件" + fileName);
+            // 上传OSS云端
+            String newFileName = OSSUtils.uploadInputStreamOOS(new ByteArrayInputStream(fileContent), fileName);
+
+            MyPair<String, Integer> pair = getNameAndSum(fileName);
+            MyImageDate myImageDate = new MyImageDate(pair.getValue(), pair.getKey(), newFileName);
+            if(map.get(pair.getKey()) == null){
+                List<MyImageDate> list = new ArrayList<>();
+                list.add(myImageDate);
+                map.put(pair.getKey(), list);
+            }
+            else{
+                List<MyImageDate> list = map.get(pair.getKey());
+                list.add(myImageDate);
+                map.put(pair.getKey(), list);
+            }
+        }
+
+        return sortLists(map);
+    }
+
+    public static List<List<String>> sortLists(Map<String, List<MyImageDate>> map){
+        List<List<String>> lists = new ArrayList<>();
+        // 获取键集并遍历
+        for (String key : map.keySet()) {
+            List<String> stringList = new ArrayList<>();
+            List<MyImageDate> list = map.get(key);
+            list.sort(Comparator.comparing(MyImageDate::getSum));
+
+            list.forEach(myImageDate -> {
+                stringList.add(myImageDate.getImagePath());
+            });
+            lists.add(stringList);
+        }
+        return lists;
+    }
+
+    @Data
+    static class MyPair<K, V> {
+        private K key;
+        private V value;
+
+        public MyPair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    static class MyImageDate {
+        private Integer sum;
+        private String name;
+        private String imagePath;
+    }
+
+    public static boolean checkZipFileNames(MultipartFile multipartFile) {
+        try (InputStream is = multipartFile.getInputStream();
+             ZipArchiveInputStream zais = new ZipArchiveInputStream(is)) {
+
+            ArchiveEntry entry;
+
+            while ((entry = zais.getNextEntry()) != null) {
+                if (!entry.isDirectory()) {//处理文件
+                    System.out.println("解压的文件名：" + entry.getName());
+                    if(getNameAndSum(entry.getName()) == null){
+                        return false;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("解压失败");
+            throw new RuntimeException(e);
+        }
+        return true;
+    }
+
+    /**
+     * 获取XXX(number).jpg
+    **/
+    public static MyPair<String, Integer> getNameAndSum(String fileName){
+        Map<String, Object> map = new HashMap<>();
+        // 使用正则表达式匹配
+        Pattern pattern = Pattern.compile("(\\w+)\\((\\d+)\\)\\.jpg");
+        Matcher matcher = pattern.matcher(fileName);
+
+        if (matcher.find()) {
+            // 提取分组
+            String prefix = matcher.group(1); // 匹配第一个括号内的文本
+            int number = Integer.parseInt(matcher.group(2)); // 第二个括号内的文本并转换为整数
+
+            map.put("name", prefix);
+            map.put("sum", number);
+
+            return new MyPair<>(prefix, number);
+        } else {
+            return null;
+        }
+    }
+
+    public static void main(String[] args) {
+        String fileName = "XXX(1).jpg";
+
+        // 使用正则表达式匹配
+        Pattern pattern = Pattern.compile("(\\w+)\\((\\d+)\\)\\.jpg");
+        Matcher matcher = pattern.matcher(fileName);
+
+        if (matcher.find()) {
+            // 提取分组
+            String prefix = matcher.group(1); // 匹配第一个括号内的文本
+            int number = Integer.parseInt(matcher.group(2)); // 第二个括号内的文本并转换为整数
+
+            System.out.println("Prefix: " + prefix);
+            System.out.println("Number: " + number);
+        } else {
+            System.out.println("No match found.");
+        }
+    }
+
 }

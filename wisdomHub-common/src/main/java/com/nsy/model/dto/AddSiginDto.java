@@ -1,0 +1,65 @@
+package com.nsy.model.dto;
+
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+@Data
+public class AddSiginDto implements Serializable {
+    /**
+     * 课程id
+     */
+    @TableField(value = "course_id")
+    private Integer courseId;
+
+    /**
+     * 班级id
+     */
+    @TableField(value = "class_id")
+    private Integer classId;
+
+    /**
+     * 老师id
+     */
+    @TableField(value = "teacher_id")
+    private Integer teacherId;
+
+    /**
+     * 活动名称
+     */
+    @TableField(value = "title")
+    private String title;
+
+    /**
+     * 开始时间
+     */
+    @TableField(value = "begin_time")
+    private LocalDateTime beginTime;
+
+    /**
+     * 结束时间
+     */
+    @TableField(value = "end_time")
+    private LocalDateTime endTime;
+    /**
+     * 签到（0：智能考勤，1：普通签到，2：手势签到，3：签到码签到）
+     */
+    @TableField(value = "type")
+    private Integer type;
+    /**
+     * 答案手势或签到码
+     */
+    @TableField(value = "answer")
+    private String answer;
+    /**
+     * 图片（手势图片或智能考勤图片）
+     */
+    @TableField(value = "answer_image")
+    private String answerImage;
+
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
+}

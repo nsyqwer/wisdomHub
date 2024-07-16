@@ -2,9 +2,9 @@ package com.nsy.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nsy.model.dto.UpdateSiginDto;
+import com.nsy.mapper.StudentActivityMapper;
 import com.nsy.model.pojo.StudentActivity;
 import com.nsy.service.StudentActivityService;
-import com.nsy.mapper.StudentActivityMapper;
 import com.nsy.util.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +35,7 @@ public class StudentActivityServiceImpl extends ServiceImpl<StudentActivityMappe
 
     @Override
     public List<StudentActivity> getByActivityId(Integer activityId) {
+
         List<StudentActivity> studentSigninList = studentActivityMapper.selectByActivityId(activityId);
         return studentSigninList;
     }
