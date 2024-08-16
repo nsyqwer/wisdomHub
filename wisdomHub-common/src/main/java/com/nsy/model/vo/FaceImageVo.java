@@ -17,7 +17,7 @@ public class FaceImageVo {
     **/
     Integer id;
     /**
-     * 学习名字
+     * 学生名字
     **/
     String name;
 }

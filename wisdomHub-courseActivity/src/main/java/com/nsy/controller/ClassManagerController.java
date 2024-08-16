@@ -1,7 +1,5 @@
 package com.nsy.controller;
 
-import cn.hutool.core.lang.ClassScanner;
-import com.nsy.mapper.ClassMapper;
 import com.nsy.mapper.mapstruct.StudentDtoMapstruct;
 import com.nsy.model.BaseResult;
 import com.nsy.model.dto.AddStudentDto;

@@ -60,6 +60,8 @@ public class TestPaperController{
     public BaseResult<Integer> addTestPaper(@RequestParam Integer teacherId, @RequestParam Integer courseId){
         log.info("新建试卷成功");
         TestPaper testPaper = testPaperService.addTestPaper(teacherId, courseId);
+
+        System.out.println("新建试卷：" + testPaper);
         return new BaseResult<>(200, "新建试卷成功", testPaper.getId());
     }
 
@@ -185,7 +187,7 @@ public class TestPaperController{
      * @return com.nsy.model.BaseResult<com.nsy.model.vo.TestStudentAnswerVo>
     **/
 
-    @GetMapping("getStudentAnswer")
+    @PostMapping("getStudentAnswer")
     public BaseResult<TestStudentAnswerVo> getStudentAnswer(@RequestBody TestPaperImageDto testPaperImageDto){
         log.info("通过试卷获取学生答案");
         TestStudentAnswerVo studentAnswerVo = studentAssignmentService.getTestPaperStudent(testPaperImageDto);

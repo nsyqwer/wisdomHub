@@ -132,6 +132,8 @@ public class StudentAssignmentServiceImpl extends ServiceImpl<StudentAssignmentM
 
         StudentAssignment studentAssignment1 = studentAssignmentMapper.selectByImages(studentAnswer.getTestId(), testPaperImages);
 
+        System.out.println("学生试卷：" + studentAssignment);
+
         if(studentAssignment1 == null) {
             studentAssignmentMapper.insert(studentAssignment);
         }

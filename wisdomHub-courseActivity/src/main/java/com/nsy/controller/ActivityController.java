@@ -14,6 +14,7 @@ import com.nsy.service.StudentActivityService;
 import com.nsy.service.StudentService;
 import com.nsy.util.OSSUtils;
 import com.nsy.util.xunfei.example.Main;
+import com.nsy.util.xunfei.face.WebFaceBaidu;
 import com.nsy.util.xunfei.face.WebFaceDetect;
 import com.nsy.model.vo.*;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,16 +50,56 @@ public class ActivityController {
      * @return com.nsy.model.BaseResult<com.nsy.model.vo.AddActivityVo>
     **/
 
-
     @PutMapping("/addSigin")
     public BaseResult<AddActivityVo> addActivity(@RequestBody AddSiginDto sigin) throws Exception {
         System.out.println("智能考勤图片链接" + sigin.getAnswerImage());
         log.info("创建签到活动");
+
+        long start = System.nanoTime();
         Activity activity = activityService.addSigin(sigin);
+        long end = System.nanoTime();
+
+        System.out.println("智能签到时间：" + ((end - start) / 1_000_000_000.0));
+
         List<StudentActivity> studentActivities = studentActivityService.getByActivityId(activity.getId());
         AddActivityVo activityVo = new AddActivityVo(activity.getId(), activity.getDetectionImage(), studentActivities);
 
         return new BaseResult<>(200,"创建签到活动成功", activityVo);
+    }
+
+    /**
+     * 测试接口
+     * @author 文旅航
+     * @date 2024/8/8 19:07
+     * @param classId
+     * @return com.nsy.model.BaseResult
+    **/
+
+    @PostMapping("test")
+    public BaseResult test(Integer classId) throws InterruptedException {
+        log.info("进入测试方法");
+        try {
+            WebFaceBaidu.addGroup("" + classId);
+        }
+        catch (Exception e){
+            System.out.println(MessageFormat.format("classId:{0}, 创建失败，可能该组已经存在", classId));
+            return new BaseResult(400, MessageFormat.format("创建组(classId:{0}) 失败", classId));
+        }
+        List<Student> students = studentService.getByClassId(classId);
+
+        log.info("进行人脸注册");
+        System.out.println("该班总人数：" + students.size());
+        for(Student student : students){
+            System.out.println(student);
+            try {
+                WebFaceBaidu.addUser(Integer.toString(classId), student.getFaceImage(), Integer.toString(student.getId()), student.getName());
+            } catch (IOException e) {
+                System.out.println(MessageFormat.format("{0} 注册失败", student.getId()));
+                throw new RuntimeException(e);
+            }
+            Thread.sleep(1000);
+        }
+        return new BaseResult(200, "测试没有问题");
     }
 
     /**
@@ -68,11 +111,20 @@ public class ActivityController {
     **/
 
     @PutMapping("/addChooser")
-    public BaseResult<AddChooserVo> addChooser(@RequestBody AddChooserDto addChooser) throws JsonProcessingException {
+    public BaseResult<AddChooserVo> addChooser(@RequestBody AddChooserDto addChooser) throws Exception {
         log.info("创建选人活动");
         Activity activity = activityService.addChooser(addChooser);
         List<Student> students = studentService.getByClassId(addChooser.getClassId());
-        return new BaseResult<>(200, "创建选人活动成功", new AddChooserVo(students, activity.getId()));
+        if(addChooser.getType() == 0){
+            List<Student> faceStudents = WebFaceDetect.getFaceImageVos(students, addChooser.getAnswerImage(), addChooser.getClassId());
+            return new BaseResult<>(200, "获取成功", new AddChooserVo(faceStudents, activity.getId()));
+        }
+        else if(addChooser.getType() == 1) {
+            return new BaseResult<>(200, "创建选人活动成功", new AddChooserVo(students, activity.getId()));
+        }
+        else{
+            return new BaseResult<>(400, "无该类型选人活动");
+        }
     }
 
     /**
@@ -213,33 +265,19 @@ public class ActivityController {
     }
 
 //    /**
-//     * 测试类用不了，这个用来测试的接口
+//     * 教师：获取班级照片中每个人框出头像的图片
 //     * @author 文旅航
-//     * @date 2024/7/3 16:47
-//     * @return com.nsy.BaseResult
+//     * @date 2024/7/3 23:19
+//     * @param classId
+//     * @param image
+//     * @return com.nsy.BaseResult<java.util.List<com.nsy.vo.FaceImageVo>>
 //     **/
-//
-//    @GetMapping("test")
-//    public BaseResult get(@RequestParam MultipartFile image) throws Exception {
-//        log.info("进行测试");
-//        OSSUtils.uploadFileToOOS(image);
-//        return new BaseResult(200, "测试成功");
+//    @PostMapping("getFaceImageVos")
+//    public BaseResult<List<FaceImageVo>> getFaceImageVos(@RequestParam Integer classId, @RequestParam MultipartFile image) throws Exception {
+//        log.info("获取班级照片中每个人框出头像的图片");
+//        List<Student> students = studentService.getByClassId(classId);
+//        return new BaseResult<>(200, "获取成功", WebFaceDetect.getFaceImageVos(students, image));
 //    }
-
-    /**
-     * 教师：获取班级照片中每个人框出头像的图片
-     * @author 文旅航
-     * @date 2024/7/3 23:19
-     * @param classId
-     * @param image
-     * @return com.nsy.BaseResult<java.util.List<com.nsy.vo.FaceImageVo>>
-     **/
-    @PostMapping("getFaceImageVos")
-    public BaseResult<List<FaceImageVo>> getFaceImageVos(@RequestParam Integer classId, @RequestParam MultipartFile image) throws Exception {
-        log.info("获取班级照片中每个人框出头像的图片");
-        List<Student> students = studentService.getByClassId(classId);
-        return new BaseResult<>(200, "获取成功", WebFaceDetect.getFaceImageVos(students, image));
-    }
 
     /**
      * 工具：上传文件获得文件地址

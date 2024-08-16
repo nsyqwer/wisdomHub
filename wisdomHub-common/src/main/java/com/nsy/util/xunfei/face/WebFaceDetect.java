@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.nsy.model.pojo.Activity;
 import com.nsy.model.pojo.Student;
 import com.nsy.util.OSSUtils;
 import com.nsy.util.xunfei.face.util.FileUtil;
@@ -43,6 +44,7 @@ import java.util.*;
 public class WebFaceDetect {
 
     static List<Student> students = new ArrayList<>();
+    static Integer classId = 0;
     static List<String> ren_liangs = new ArrayList<>();
     static WebFaceCompare demo = new WebFaceCompare();
 
@@ -81,11 +83,12 @@ public class WebFaceDetect {
     }
 
     //获取框出头像的每个人的对应的图片
-    public static List<FaceImageVo> getFaceImageVos(List<Student> studentList, MultipartFile multipartFile) throws Exception {
-        List<FaceImageVo> faceImageVos = new ArrayList<>();
+    public static List<Student> getFaceImageVos(List<Student> studentList, String imagePath, Integer id) throws Exception {
+        List<Student> faceStudents = new ArrayList<>();
 
-        imagePath1 = OSSUtils.uploadFileToOOS(multipartFile);
+        imagePath1 = imagePath;
         students = getStudentFaces(studentList);
+        classId = id;
 
         String text = getJsonText();
 
@@ -95,8 +98,10 @@ public class WebFaceDetect {
         // 获取总的面部数量
         int totalFaces = rootNode.get("face_num").asInt();
 
+        System.out.println("总共 " + totalFaces + "张");
         // 遍历所有面部数据
         for (int i = 1; i <= totalFaces; i++) {
+            System.out.println("获取到" + i + "张");
             JsonNode faceNode = rootNode.path("face_" + i);
             if (faceNode.isMissingNode()) {
                 System.out.println("Face " + i + " data not found.");
@@ -125,9 +130,10 @@ public class WebFaceDetect {
 
             // 设置为红色粗线条
             g2d.setColor(Color.RED);
-            BasicStroke thickStroke = new BasicStroke(4.0f);
+            BasicStroke thickStroke = new BasicStroke(3.0f);
             g2d.setStroke(thickStroke);
             markImage(g2d, x, y, height, width);
+
 
             String savePath = OSSUtils.uploadImageToOOS(image, i + ".jpg");
 
@@ -136,39 +142,115 @@ public class WebFaceDetect {
             Path outputImagePath = path.resolve("image.jpg");
             ImageIO.write(croppedImage, "jpg", outputImagePath.toFile());
 
+
+            System.out.println("进行检测的图像为：" + outputImagePath.toString());
+
             //获取该人脸对应的班级中学生姓名以及id
             Student student = getStudentByFace(outputImagePath.toString());
             if(student != null) {
-                faceImageVos.add(new FaceImageVo(savePath, student.getId(), student.getName()));
+                student.setFaceImage(savePath);
+                faceStudents.add(student);
             }
         }
 
-        return faceImageVos;
+        return faceStudents;
     }
 
-    //通过照片获取班级中对应的学生
+    /**
+     * 将多张图片合成为一张图片，保持原尺寸，并生成3x3的网格。
+     *
+     * @param images    要合成的图片列表
+     * @param output    输出文件路径
+     * @param gridSize  网格的行列数 (例如3表示3x3)
+     * @throws IOException 如果出现IO异常
+     */
+    public static void combineImages(List<BufferedImage> images, String output, int gridSize) throws IOException {
+        // 计算最终图片的大小
+        int maxWidth = 0;
+        int maxHeight = 0;
+
+        // 计算网格的总宽度和总高度
+        for (BufferedImage img : images) {
+            maxWidth = Math.max(maxWidth, img.getWidth());
+            maxHeight = Math.max(maxHeight, img.getHeight());
+        }
+
+        int canvasWidth = maxWidth * gridSize;
+        int canvasHeight = maxHeight * gridSize;
+
+        BufferedImage combinedImage = new BufferedImage(canvasWidth, canvasHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = combinedImage.createGraphics();
+
+        // 填充背景为白色
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        // 将图片绘制到网格中
+        for (int i = 0; i < images.size(); i++) {
+            int row = i / gridSize;
+            int col = i % gridSize;
+
+            BufferedImage img = images.get(i);
+            int x = col * maxWidth;
+            int y = row * maxHeight;
+
+            g2d.drawImage(img, x, y, null);
+        }
+
+        g2d.dispose();
+
+        // 输出合成后的图片
+        ImageIO.write(combinedImage, "jpg", new File(output));
+    }
+
+    //通过照片获取班级中对应的学生，
+//    private static Student getStudentByFace(String ren_liang) throws Exception {
+//        Student student_1 = null;
+//
+//        for(Student student : students){
+//            if(student.getFaceImage() == null || student.getFaceImage().isEmpty())
+//                continue;
+//            Double score = get_ren_liang_dui_bi(student.getFaceImage(), ren_liang);
+//            if(score >= 0.9){
+//                System.out.println("***********已到学生：" + student);
+//                student_1 = student;
+//                break;
+//            }
+//        }
+//        if(student_1 != null) {
+//            students.remove(student_1);
+//        }
+//        return student_1;
+//    }
+
+    //通过百度api优化获取单个照片中对应班级学生
     private static Student getStudentByFace(String ren_liang) throws Exception {
-        Student student_1 = null;
+        return WebFaceBaidu.getUserByGroupId(ren_liang, String.valueOf(classId));
+    }
+
+    //通过百度api优化后多个头像中获取对应班级学生
+    private static List<Student> getStudentsByFace(List<BufferedImage> images) throws IOException, InterruptedException {
+        combineImages(images, "combined_image.jpg", 3);
+        Set<Integer> userIds = WebFaceBaidu.getUsersByGroupId("combined_image.jpg", String.valueOf(classId));
+
+        List<Student> resultStudents = new ArrayList<>();
+
         for(Student student : students){
-            if(student.getFaceImage() == null || student.getFaceImage().isEmpty())
-                continue;
-            Double score = get_ren_liang_dui_bi(student.getFaceImage(), ren_liang);
-            if(score >= 0.9){
-                System.out.println("***********已到学生：" + student);
-                student_1 = student;
-                break;
+            if(userIds.contains(student.getId())){
+                resultStudents.add(student);
             }
         }
-        if(student_1 != null) {
-            students.remove(student_1);
+        for(Student student : resultStudents){
+            students.remove(student);
         }
-        return student_1;
+        return resultStudents;
     }
 
 
     //获取不在教室的学生集合
-    public static List<Student> getNoReachStudents(List<Student> studentList, String image) throws Exception {
+    public static List<Student> getNoReachStudents(List<Student> studentList, String image, Integer id) throws Exception {
         imagePath1 = image;
+        classId = id;
 
         System.out.println("检测的图片为：" + image);
         students = new ArrayList<>(studentList);
@@ -177,11 +259,20 @@ public class WebFaceDetect {
 
         System.out.println("人脸检测及属性分析结果(text)base64解码后：");
 
+        long start = System.nanoTime();
         String text = getJsonText();
+        long end = System.nanoTime();
+
+        System.out.println("检测人脸信息耗时：" + ((end - start) / 1_000_000_000.0));
 
         System.out.println(text);
 
+        start = System.nanoTime();
         getImage(text);
+        end = System.nanoTime();
+
+        System.out.println("人脸对比获取学习考勤信息耗时：" + ((end - start) / 1_000_000_000.0));
+
 
         System.out.println("未到达学生");
         System.out.println(students);
@@ -263,6 +354,7 @@ public class WebFaceDetect {
         int totalFaces = rootNode.get("face_num").asInt();
 
         // 遍历所有面部数据
+        List<BufferedImage> bufferedImages = new ArrayList<>();
         for (int i = 1; i <= totalFaces; i++) {
             JsonNode faceNode = rootNode.path("face_" + i);
             if (faceNode.isMissingNode()) {
@@ -277,13 +369,17 @@ public class WebFaceDetect {
             int y = faceNode.get("y").asInt();
 
             BufferedImage croppedImage = image.getSubimage(x,y,width,height);
-            Path outputImagePath = path.resolve("image.jpg");
 
-            ImageIO.write(croppedImage, "jpg", outputImagePath.toFile());
-
-            getStudentByFace(outputImagePath.toString());
+            bufferedImages.add(croppedImage);
+            if(bufferedImages.size() == 9){
+                getStudentsByFace(bufferedImages);
+                bufferedImages.clear();
+            }
 
             markImage(g2d, x, y, height, width);
+        }
+        if(!bufferedImages.isEmpty()){
+            getStudentsByFace(bufferedImages);
         }
     }
 
@@ -399,8 +495,6 @@ public class WebFaceDetect {
         headers.put("Content-type", "application/json");
         String result = HttpUtil.doPost2(url, headers, bodyParam);
         if (result != null) {
-            System.out.println("已经输出");
-            System.out.println("人脸检测及属性分析接口调用结果：" + result);
             return json.fromJson(result, ResponseData.class);
         } else {
             return null;
