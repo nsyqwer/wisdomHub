@@ -1,12 +1,10 @@
 package com.nsy.mapper;
 
+import com.nsy.model.dto.ClassScore;
 import com.nsy.model.pojo.Assignment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.nsy.model.vo.ExamHistoryVo;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -27,6 +25,7 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
    @Result(property = "examId",column = "id")
    @Result(property = "examTitle",column = "title")
     List<ExamHistoryVo> listExam(Integer studentId,Integer courseId);
+
 
 
 }

@@ -28,7 +28,7 @@ public class Class implements Serializable {
 
     /**
      * 老师id
-    **/
+     */
     @TableField(value = "teacher_id")
     private Integer teacherId;
 

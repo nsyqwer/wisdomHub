@@ -31,23 +31,23 @@ import java.util.*;
 
 public class WebFaceCompare {
 
-    public static void main(String[] args) throws Exception {
-        WebFaceCompare demo = new WebFaceCompare();
-        long startTime = System.currentTimeMillis();
-        ResponseData respData = demo.faceContrast(Property.imagePath1,Property.imagePath2);
-        if (respData!=null && respData.getPayLoad().getFaceCompareResult() != null) {
-            String textBase64 = respData.getPayLoad().getFaceCompareResult().getText();
-            String text = new String(Base64.getDecoder().decode(textBase64));
-
-            long endTime = System.currentTimeMillis();
-            System.out.println("代码运行时间：" + (endTime - startTime) + "ms");
-            System.out.println("人脸比对结果(text)base64解码后：");
-            System.out.println(text);
-            ObjectMapper mapper = new ObjectMapper();
-            RenLianDuiBiView renLian = mapper.readValue(text, RenLianDuiBiView.class);
-            System.out.println(renLian);
-        }
-    }
+//    public static void main(String[] args) throws Exception {
+//        WebFaceCompare demo = new WebFaceCompare();
+//        long startTime = System.currentTimeMillis();
+//        ResponseData respData = demo.faceContrast(Property.imagePath1,Property.imagePath2);
+//        if (respData!=null && respData.getPayLoad().getFaceCompareResult() != null) {
+//            String textBase64 = respData.getPayLoad().getFaceCompareResult().getText();
+//            String text = new String(Base64.getDecoder().decode(textBase64));
+//
+//            long endTime = System.currentTimeMillis();
+//            System.out.println("代码运行时间：" + (endTime - startTime) + "ms");
+//            System.out.println("人脸比对结果(text)base64解码后：");
+//            System.out.println(text);
+//            ObjectMapper mapper = new ObjectMapper();
+//            RenLianDuiBiView renLian = mapper.readValue(text, RenLianDuiBiView.class);
+//            System.out.println(renLian);
+//        }
+//    }
    class Property {
         public final static  String requestUrl =  "https://api.xf-yun.com/v1/private/s67c9c78c";
         public final static  String appid ="061a30a7"; //请填写控制台获取的APPID,
@@ -100,7 +100,6 @@ public class WebFaceCompare {
 
     //读取image
     private byte[] readImage(String imagePath) throws IOException {
-        System.out.println("这里的路径是：" + imagePath);
         if(imagePath.contains("https")){
             URL url = new URL(imagePath);
             try (InputStream in = url.openStream()) {
@@ -114,6 +113,7 @@ public class WebFaceCompare {
             }
         }
         else {
+            System.out.println(imagePath);
             InputStream is = new FileInputStream(imagePath);
             byte[] imageByteArray1 = FileUtil.read(imagePath);
             //return is.readAllBytes();
@@ -122,6 +122,8 @@ public class WebFaceCompare {
     }
 
     public ResponseData faceContrast(String imageFirstUrl, String imageSecondUrl) throws Exception {
+
+        System.out.println("该文件地址：" + imageFirstUrl + " " + imageSecondUrl);
 
         String url = assembleRequestUrl(Property.requestUrl, Property.apiKey, Property.apiSecret);
 

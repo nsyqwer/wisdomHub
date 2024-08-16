@@ -2,6 +2,7 @@ package com.nsy.service;
 
 import com.nsy.model.dto.KnowledgeDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 
@@ -9,6 +10,7 @@ public interface AIDubboService {
     void createKnowledgeGraph(String question,Integer courseId) throws IOException;
 
     String createMindMap(String question);
+
 
     String correct(String question);
 

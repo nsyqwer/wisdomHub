@@ -1,7 +1,7 @@
 package com.nsy.mapper;
 
-import com.nsy.model.pojo.StudentActivity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.nsy.model.pojo.StudentActivity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;

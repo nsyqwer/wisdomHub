@@ -1,31 +1,26 @@
 package com.nsy.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nsy.constant.AssignmentTypeEnum;
-import com.nsy.mapper.AssignmentMapper;
-import com.nsy.mapper.CourseMapper;
-import com.nsy.mapper.StudentMapper;
-import com.nsy.model.dto.AssignmentPublishDTO;
-import com.nsy.model.dto.AssignmentQuestionDTO;
-import com.nsy.model.dto.CourseSetClassDTO;
-import com.nsy.model.dto.StudentAssignmentDTO;
-import com.nsy.model.pojo.Assignment;
+import com.nsy.mapper.*;
+import com.nsy.mapper.mapstruct.TestPaperDtoMapper;
+import com.nsy.model.dto.*;
+import com.nsy.model.pojo.*;
 import com.nsy.model.pojo.Class;
-import com.nsy.model.pojo.Course;
-import com.nsy.model.pojo.Student;
-import com.nsy.model.pojo.StudentAssignment;
 import com.nsy.model.vo.MyAssignmentVO;
 import com.nsy.model.vo.StudentAssignDetailVO;
 import com.nsy.model.vo.StudentSubmissionVO;
+import com.nsy.model.vo.TestStudentAnswerVo;
 import com.nsy.service.StudentAssignmentService;
-import com.nsy.mapper.StudentAssignmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,6 +43,11 @@ public class StudentAssignmentServiceImpl extends ServiceImpl<StudentAssignmentM
     @Autowired
     private StudentMapper studentMapper;
 
+    @Autowired
+    private TestPaperMapper testPaperMapper;
+
+    @Autowired
+    private TestPaperDtoMapper testPaperDtoMapper;
     public List<Integer> findStudentIdsByClassIds(List<Integer> classIds) {
         // 将 List<Integer> 转换为逗号分隔的字符串
         String classIdsStr = String.join(",", classIds.stream().map(String::valueOf).toArray(String[]::new));
@@ -98,16 +98,117 @@ public class StudentAssignmentServiceImpl extends ServiceImpl<StudentAssignmentM
     public StudentAssignDetailVO geStuAssignDetail(Integer studentAssignmentId) throws JsonProcessingException {
         StudentAssignment studentAssignment =studentAssignmentMapper.selectById(studentAssignmentId);
         Student student =studentMapper.selectById(studentAssignment.getStudentId());
+
+        System.out.println("studentAssignment = " + studentAssignment);
+
         ObjectMapper objectMapper = new ObjectMapper();
         List<AssignmentQuestionDTO> assignmentQuestionDTOList = objectMapper
                 .readValue(studentAssignment.getContent(), new TypeReference<List<AssignmentQuestionDTO>>() {});
+
         StudentAssignDetailVO studentAssignDetailVO =new StudentAssignDetailVO();
         studentAssignDetailVO.setName(student.getName());
         studentAssignDetailVO.setClassName(student.getClassName());
         studentAssignDetailVO.setQuestionList(assignmentQuestionDTOList);
         studentAssignDetailVO.setTitle(studentAssignment.getTitle());
         studentAssignDetailVO.setStudentScore(studentAssignment.getStudentScore());
+        studentAssignDetailVO.setComment(studentAssignment.getComment());
+
         return studentAssignDetailVO;
+    }
+    @Override
+    public void saveAssignments(Integer id, SaveTestPaperDto saveTestPaperDto, Integer state) {
+        List<StudentTestPaperInfo> studentTestPapers = saveTestPaperDto.getStudentTestPapers();
+        for(StudentTestPaperInfo studentInfo: studentTestPapers){
+            StudentAssignment studentAssignment = testPaperDtoMapper.saveStudentInfoToPojo(studentInfo);
+            studentAssignment.setAssignmentId(id);
+            studentAssignment.setType(3);
+            studentAssignment.setTeacherId(saveTestPaperDto.getTeacherId());
+            studentAssignment.setCourseId(saveTestPaperDto.getCourseId());
+            studentAssignment.setTitle(saveTestPaperDto.getTitle());
+
+            studentAssignment.setState(state);
+
+            Integer studentId = studentMapper.selectIdBySnoAndName(studentInfo.getNumber(), studentInfo.getName());
+
+            studentAssignment.setStudentId(studentId);
+
+            if(studentAssignment.getAssignmentId() != null){
+                StudentAssignment studentAssignment1 = studentAssignmentMapper.selectById(studentAssignment.getAssignmentId());
+                if(studentAssignment1 == null){
+                    studentAssignmentMapper.insert(studentAssignment);
+                }
+                else{
+                    studentAssignmentMapper.updateById(studentAssignment);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void saveTestPaperStudent(TestPaperStudentAnswer studentAnswer) {
+        String testPaperImages = JSON.toJSONString(studentAnswer.getTestPaperImages());
+
+        StudentAssignment studentAssignment = testPaperDtoMapper.studentAnswerToStudentAssignment(studentAnswer);
+        studentAssignment.setTestPaperImages(testPaperImages);
+
+        //插入学生id
+        Integer studentId = studentMapper.selectIdBySnoAndName(studentAnswer.getNumber(), studentAnswer.getName());
+        studentAssignment.setStudentId(studentId);
+
+        TestPaper testPaper = testPaperMapper.selectById(studentAnswer.getTestId());
+
+        studentAssignment.setCourseId(testPaper.getCourseId());
+        studentAssignment.setTitle(testPaper.getTitle());
+        studentAssignment.setTeacherId(testPaper.getTeacherId());
+        studentAssignment.setType(3);
+        studentAssignment.setState(0);
+
+        StudentAssignment studentAssignment1 = studentAssignmentMapper.selectByImages(studentAnswer.getTestId(), testPaperImages);
+
+        if(studentAssignment1 == null) {
+            studentAssignmentMapper.insert(studentAssignment);
+        }
+        else{
+            studentAssignmentMapper.updateByImages(studentAssignment);
+        }
+    }
+
+    @Override
+    public TestStudentAnswerVo getTestPaperStudent(TestPaperImageDto testPaperImageDto) {
+        TestStudentAnswerVo studentAnswerVo = new TestStudentAnswerVo();
+
+        StudentAssignment studentTest = studentAssignmentMapper.selectByImages(testPaperImageDto.getTestId(), JSON.toJSONString(testPaperImageDto.getImages()));
+
+        if(studentTest != null) {
+            studentAnswerVo.setStudentScore(studentTest.getStudentScore());
+            studentAnswerVo.setTitle(studentTest.getTitle());
+            studentAnswerVo.setContent(studentTest.getContent());
+
+            Student student = studentMapper.selectById(studentTest.getStudentId());
+
+            studentAnswerVo.setSno(student.getSno());
+            studentAnswerVo.setName(student.getName());
+            studentAnswerVo.setClassName(student.getClassName());
+        }else{
+            return null;
+        }
+        return studentAnswerVo;
+    }
+
+
+    @Override
+    public List<ExamAnalysisDTO> getExamAnalysis(Integer courseId) {
+        List<Assignment> assignmentList =assignmentMapper.selectList(new QueryWrapper<Assignment>().eq("course_id",courseId));
+        List<ExamAnalysisDTO> examAnalysisDTOS =new ArrayList<>();
+        for (Assignment assignment : assignmentList) {
+            ExamAnalysisDTO examAnalysisDTO =new ExamAnalysisDTO();
+            examAnalysisDTO.setExamId(assignment.getId());
+            examAnalysisDTO.setTitle(assignment.getTitle());
+            List<ClassScore> classScoreList =studentAssignmentMapper.getClassAvgByExamId(assignment.getId());
+            examAnalysisDTO.setClassScoreList(classScoreList);
+        }
+
+        return examAnalysisDTOS;
     }
 }
 

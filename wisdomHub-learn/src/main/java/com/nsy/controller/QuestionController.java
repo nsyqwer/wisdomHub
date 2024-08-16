@@ -63,6 +63,24 @@ public class QuestionController {
         return new BaseResult<>(200,"获取课程所有题目",questionList);
     }
 
+    /**
+     * 教师：分页查询该课程所有题目
+     * @author 宁舒意
+     * @date 16:34 2024/8/6
+     * @param courseId 课程id
+     * @param currentPage 当前页数
+     * @param pageSize 每页的行数
+     * @return com.nsy.model.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.nsy.model.pojo.Question>>
+     */
+    @GetMapping("/page/{courseId}/{currentPage}/{pageSize}")
+    public BaseResult<IPage<Question>> pageQuestion(@PathVariable Integer courseId,
+                                                    @PathVariable Integer currentPage,
+                                                    @PathVariable Integer pageSize) {
+        IPage<Question> page = new Page<>(currentPage, pageSize);
+        IPage<Question> questionPage = questionService.page(page, new QueryWrapper<Question>().eq("course_id", courseId));
+        return new BaseResult<>(200, "获取课程题目分页成功", questionPage);
+    }
+
 
     /**
      * 教师：添加单个题目

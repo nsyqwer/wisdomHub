@@ -41,12 +41,14 @@ public class Assignment implements Serializable {
     /**
      * 开始时间
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "begin_date")
     private LocalDateTime beginDate;
 
     /**
      * 结束时间
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "end_date")
     private LocalDateTime endDate;
 

@@ -55,4 +55,6 @@ public interface AssignmentService extends IService<Assignment> {
      * @param correctAssignmentDTO
      */
     void aiCorrect(CorrectAssignmentDTO correctAssignmentDTO) throws JsonProcessingException;
+
+    void aiCorrectAll(Integer assignmentId,Integer teacherId) throws JsonProcessingException;
 }

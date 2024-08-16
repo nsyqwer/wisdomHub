@@ -15,14 +15,11 @@ import java.util.List;
 public class AssignmentCorrectDTO {
 
     /**
-     * 学生id
-     */
-    private Integer studentId;
+     * 学生作业id
+    **/
+    private Integer studentAssignmentId;
 
-    /**
-     * 作业id
-     */
-    private Integer assignmentId;
+
     /**
      * 老师id(负责批改的老师)
      */

@@ -15,6 +15,7 @@ import java.util.List;
  * @description: TODO
  * @date: 2024/6/10 21:30
  */
+
 @RestController
 @RequestMapping("/resource")
 public class ResourceController {

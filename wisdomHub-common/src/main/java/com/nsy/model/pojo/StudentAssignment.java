@@ -36,7 +36,7 @@ public class StudentAssignment implements Serializable {
     private Integer assignmentId;
 
     /**
-     * 作业完成状态
+     * 作业完成状态（未提交0，待批阅1，已完成2）
      */
     @TableField(value = "state")
     private Integer state;
@@ -78,7 +78,7 @@ public class StudentAssignment implements Serializable {
     private String title;
 
     /**
-     * 作业1，考试2
+     * 作业1，考试2，手写试卷3
      **/
     @TableField(value = "type")
     private Integer type;
@@ -94,6 +94,14 @@ public class StudentAssignment implements Serializable {
     **/
     @TableField(value = "exam_end_time")
     private LocalDateTime examEndTime;
+
+
+
+    /**
+     * 学生试卷
+    **/
+    @TableField(value = "test_paper_images")
+    private String testPaperImages;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

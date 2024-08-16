@@ -35,12 +35,12 @@ public class TeacherAssignVO {
     /**
      * 结束时间
      */
-    private Date endDate;
+    private LocalDateTime endDate;
 
     /**
      * 作业状态，（未开始草稿0，进行中1，已结束2）
      */
-    private String state;
+    private Integer state;
 
     /**
      * 发放作业对象

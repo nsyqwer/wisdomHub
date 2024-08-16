@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
+import lombok.Value;
 
 /**
  * 
@@ -31,7 +33,7 @@ public class Course implements Serializable {
      * 创建时间
      */
     @TableField(value = "create_time")
-    private Date createTime;
+    private LocalDateTime createTime;
 
 //    /**
 //     * 创建者id
@@ -45,6 +47,11 @@ public class Course implements Serializable {
     @TableField(value = "image")
     private String image;
 
+    /**
+     * markdown格式的思维导图
+    **/
+    @TableField(value="mind_map")
+    private String mindMap;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

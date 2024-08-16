@@ -18,10 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @className: CourseController
@@ -221,7 +224,7 @@ public class CourseController {
 
 
     /**
-     * 教师：根据课程章节内容生成知识图谱
+     * 根据课程id生成知识图谱
      * @author 宁舒意
      * @date 11:40 2024/7/14
      * @param courseId
@@ -272,8 +275,9 @@ public class CourseController {
      * @param courseId
      * @return com.nsy.model.BaseResult
      */
-    @GetMapping("/create-mindMap/{courseId}")
+    @GetMapping(value = "/create-mindMap/{courseId}")
     public BaseResult createMindMap(@PathVariable Integer courseId) throws JsonProcessingException {
+
         List<Chapter> chapterList = chapterService.list(new QueryWrapper<Chapter>().eq("course_id",courseId).eq("type","text"));
         // 遍历章节列表
         StringBuilder combinedContent = new StringBuilder();
@@ -285,7 +289,50 @@ public class CourseController {
         // 获取最终的拼接结果
         String finalContent = combinedContent.toString();
         String answer=aiDubboService.createMindMap(finalContent);
+        Course course =courseService.getById(courseId);
+        course.setMindMap(answer);
+        //思维导图是空的就直接保存，否则就更新
+        if(Objects.isNull(course.getMindMap())){
+            courseService.save(course);
+        }else {
+            courseService.updateById(course);
+        }
         return new BaseResult(200,"生成的思维导图",answer);
+    }
+
+
+    /**
+     * 保存思维导图
+     * @author 宁舒意
+     * @date 11:34 2024/8/16
+     * @param courseId
+     * @param markdown
+     * @return com.nsy.model.BaseResult
+     */
+    @PutMapping("/save")
+    public BaseResult saveMinMap(@RequestParam Integer courseId,@RequestParam String markdown){
+        Course course =courseService.getById(courseId);
+        course.setMindMap(markdown);
+        courseService.updateById(course);
+        return new BaseResult(200,"保存思维导图成功");
+    }
+
+    /**
+     * 根据课程id获取思维导图
+     * @author 宁舒意
+     * @date 16:02 2024/8/14
+     * @param courseId 课程id
+     * @return com.nsy.model.BaseResult
+     */
+    @GetMapping("/get-mindMap/{courseId}")
+    public BaseResult getMindMap(@PathVariable Integer courseId){
+        Course course =courseService.getById(courseId);
+        String markdown = course.getMindMap();
+        if(markdown==null){
+            return new BaseResult(410,"思维导图还未生成",markdown);
+        }else {
+            return new BaseResult(200,"获取该课程思维导图成功",markdown);
+        }
     }
 
     /**

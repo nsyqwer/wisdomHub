@@ -11,14 +11,12 @@ import com.nsy.model.pojo.StudentAssignment;
 import com.nsy.model.vo.MyAssignmentVO;
 import com.nsy.model.vo.TeacherAssignVO;
 import com.nsy.model.vo.TeacherExamVO;
-import java.time.ZoneOffset;
-import java.util.Date;
 import java.util.List;
 import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-07-12T19:48:16+0800",
+    date = "2024-08-13T19:04:07+0800",
     comments = "version: 1.5.0.Final, compiler: javac, environment: Java 1.8.0_362 (BellSoft)"
 )
 public class AssignmentDTOMapperImpl implements AssignmentDTOMapper {
@@ -90,18 +88,8 @@ public class AssignmentDTOMapperImpl implements AssignmentDTOMapper {
         teacherAssignVO.setAssignmentId( assignment.getId() );
         teacherAssignVO.setTitle( assignment.getTitle() );
         teacherAssignVO.setBeginDate( assignment.getBeginDate() );
-        if ( assignment.getEndDate() != null ) {
-            teacherAssignVO.setEndDate( Date.from( assignment.getEndDate().toInstant( ZoneOffset.UTC ) ) );
-        }
-        else {
-            teacherAssignVO.setEndDate( null );
-        }
-        if ( assignment.getState() != null ) {
-            teacherAssignVO.setState( String.valueOf( assignment.getState() ) );
-        }
-        else {
-            teacherAssignVO.setState( null );
-        }
+        teacherAssignVO.setEndDate( assignment.getEndDate() );
+        teacherAssignVO.setState( assignment.getState() );
     }
 
     @Override

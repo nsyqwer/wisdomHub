@@ -46,25 +46,25 @@ public class WebFaceDetect {
     static List<String> ren_liangs = new ArrayList<>();
     static WebFaceCompare demo = new WebFaceCompare();
 
-    public static void main(String[] args) throws Exception {
-        System.out.println(students);
-        WebFaceDetect demo = new WebFaceDetect();
-        ResponseData respData = demo.faceContrast(imagePath1);
-        if (respData!=null && respData.getPayLoad().getFace_detect_result() != null) {
-            String textBase64 = respData.getPayLoad().getFace_detect_result().getText();
-            String text = new String(Base64.getDecoder().decode(textBase64));
-            System.out.println("人脸检测及属性分析结果(text)base64解码后：");
-
-            System.out.println(text);
-
-            getImage(text);
-
-            System.out.println("未到学生名单");
-            for(Student student : students){
-                System.out.println(student);
-            }
-        }
-    }
+//    public static void main(String[] args) throws Exception {
+//        System.out.println(students);
+//        WebFaceDetect demo = new WebFaceDetect();
+//        ResponseData respData = demo.faceContrast(imagePath1);
+//        if (respData!=null && respData.getPayLoad().getFace_detect_result() != null) {
+//            String textBase64 = respData.getPayLoad().getFace_detect_result().getText();
+//            String text = new String(Base64.getDecoder().decode(textBase64));
+//            System.out.println("人脸检测及属性分析结果(text)base64解码后：");
+//
+//            System.out.println(text);
+//
+//            getImage(text);
+//
+//            System.out.println("未到学生名单");
+//            for(Student student : students){
+//                System.out.println(student);
+//            }
+//        }
+//    }
 
     //获取有头像的学生集合
     public static List<Student> getStudentFaces(List<Student> studentList){
@@ -109,10 +109,17 @@ public class WebFaceDetect {
             int x = faceNode.get("x").asInt();
             int y = faceNode.get("y").asInt();
 
-            Path path = Paths.get("D:/");
-            URL url = new URL(imagePath1);
-            InputStream is = url.openStream();
-            BufferedImage image = ImageIO.read(is);
+            Path path = Paths.get("");
+            BufferedImage image = null;
+            if(imagePath1.contains("http")){
+                URL url = new URL(imagePath1);
+                InputStream is = url.openStream();
+                image = ImageIO.read(is);
+            }
+            else{
+                image = ImageIO.read(new File(imagePath1));
+            }
+
             // 获取Graphics2D对象，用于绘图
             Graphics2D g2d = image.createGraphics();
 
@@ -147,6 +154,7 @@ public class WebFaceDetect {
                 continue;
             Double score = get_ren_liang_dui_bi(student.getFaceImage(), ren_liang);
             if(score >= 0.9){
+                System.out.println("***********已到学生：" + student);
                 student_1 = student;
                 break;
             }
@@ -161,6 +169,8 @@ public class WebFaceDetect {
     //获取不在教室的学生集合
     public static List<Student> getNoReachStudents(List<Student> studentList, String image) throws Exception {
         imagePath1 = image;
+
+        System.out.println("检测的图片为：" + image);
         students = new ArrayList<>(studentList);
 
         System.out.println(students);
@@ -183,6 +193,7 @@ public class WebFaceDetect {
     private static String getJsonText() throws Exception {
         WebFaceDetect demo = new WebFaceDetect();
         ResponseData respData = demo.faceContrast(imagePath1);
+        System.out.println("图片为： " + imagePath1);
         if (respData!=null && respData.getPayLoad().getFace_detect_result() != null) {
             String textBase64 = respData.getPayLoad().getFace_detect_result().getText();
             String text = new String(Base64.getDecoder().decode(textBase64));
@@ -210,17 +221,24 @@ public class WebFaceDetect {
     public static String detection_image;
     // 获取绘制人脸后的图片
     public static void getImage(String text) throws Exception {
-        Path path = Paths.get("D:");
-        URL url = new URL(imagePath1);
-        InputStream is = url.openStream();
-        BufferedImage image = ImageIO.read(is);
+        Path path = Paths.get("");
+        BufferedImage image = null;
+        if(imagePath1.contains("http")){
+            System.out.println("66666666666666666图片：" + imagePath1);
+            URL url = new URL(imagePath1);
+            InputStream is = url.openStream();
+            image = ImageIO.read(is);
+        }
+        else{
+            image = ImageIO.read(new File(imagePath1));
+        }
 
         // 获取Graphics2D对象，用于绘图
         Graphics2D g2d = image.createGraphics();
 
         g2d.setColor(Color.RED);
         // 创建并设置线条的粗细为5像素
-        BasicStroke thickStroke = new BasicStroke(2.0f);
+        BasicStroke thickStroke = new BasicStroke(5.0f);
         g2d.setStroke(thickStroke);
 
         getWeiZhiMark(g2d, text, image, path);
@@ -278,6 +296,9 @@ public class WebFaceDetect {
 
             ObjectMapper mapper = new ObjectMapper();
             RenLianDuiBiView renLian = mapper.readValue(text, RenLianDuiBiView.class);
+            if (renLian.getScore() == null){
+                return 0.0;
+            }
             return renLian.getScore();
         }
         return 0.0;

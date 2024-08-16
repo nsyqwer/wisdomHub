@@ -1,12 +1,11 @@
 package com.nsy.mapper;
 
+import com.nsy.model.dto.ClassScore;
 import com.nsy.model.pojo.StudentAssignment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.nsy.model.vo.MyAssignmentVO;
 import com.nsy.model.vo.StudentSubmissionVO;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -41,7 +40,7 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
      * @param courseId
      * @return java.util.List<com.nsy.model.vo.MyAssignmentVO>
      */
-    @Select("select assignment_id,end_date,assignment.title,student_assignment.state from student_assignment\n" +
+    @Select("select assignment_id,end_date,assignment.title,exam_time,student_assignment.state from student_assignment\n" +
             "        join assignment on student_assignment.assignment_id = assignment.id\n" +
             "        where student_id =#{studentId}\n" +
             "        and assignment.course_id  =#{courseId} " +
@@ -57,7 +56,7 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
      * @param courseId
      * @return java.util.List<com.nsy.model.vo.MyAssignmentVO>
      */
-    @Select("select assignment_id,end_date,assignment.title,student_assignment.state from student_assignment\n" +
+    @Select("select assignment_id,end_date,assignment.title,exam_time,student_assignment.state from student_assignment\n" +
             "        join assignment on student_assignment.assignment_id = assignment.id\n" +
             "        where student_id =#{studentId}\n" +
             "        and assignment.course_id  =#{courseId}" +
@@ -74,11 +73,11 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
      * @param courseId
      * @return java.util.List<com.nsy.model.vo.MyAssignmentVO>
      */
-    @Select("select assignment_id,end_date,assignment.title,student_assignment.state from student_assignment\n" +
+    @Select("select assignment_id,end_date,assignment.title,exam_time,student_assignment.state from student_assignment\n" +
             "        join assignment on student_assignment.assignment_id = assignment.id\n" +
             "        where student_id =#{studentId}\n" +
             "        and assignment.course_id  =#{courseId}" +
-            "        and student_assignment.state=0 OR student_assignment.state=1 " +
+            "        and (student_assignment.state=0 OR student_assignment.state=1) " +
             "        and assignment.type=#{type}")
     List<MyAssignmentVO> listUnFinished(int studentId, int courseId,int type);
 
@@ -90,10 +89,11 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
             "JOIN assignment a ON sa.assignment_id = a.id " +
             "JOIN student s ON sa.student_id = s.id " +
             "WHERE s.class_id = #{classId} " +
+            "AND sa.assignment_id = #{assignmentId} "+
             "AND a.course_id = #{courseId} " +
             "AND a.state = #{assignmentState} " +
             "AND sa.state = #{studentAssignmentState}")
-    int countTeaAssign(int classId,  int courseId, int assignmentState, int studentAssignmentState);
+    int countTeaAssign(int assignmentId,int classId,  int courseId, int assignmentState, int studentAssignmentState);
 
 
 
@@ -107,6 +107,7 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
             "           where student_assignment.assignment_id =#{assignmentId}\n" +
             "           and assignment.type =#{type}\n" +
             "           and student_assignment.state=#{studentAssignmentState}")
+    @Result(property = "studentAssignmentId",column = "id")
     List<StudentSubmissionVO> listSubmission(Integer assignmentId,Integer type,Integer studentAssignmentState);
 
     /**
@@ -118,6 +119,7 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
             "           join assignment  on assignment.id = student_assignment.assignment_id\n" +
             "           where student_assignment.assignment_id =#{assignmentId}\n" +
             "           and assignment.type =#{type}\n")
+    @Result(property = "studentAssignmentId",column = "id")
     List<StudentSubmissionVO> listSubmissionByAll(Integer assignmentId,Integer type);
 
 
@@ -131,8 +133,55 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
     BigDecimal getAvg(Integer studentId, Integer courseId,Integer type);
 
 
+    @Update("update student_assignment " +
+            "set state = 2 " +
+            "where assignment_id = #{id}")
+    void updateStateByTest(Integer id);
+
+    @Select("select * " +
+            "from student_assignment " +
+            "where assignment_id = #{testId} and test_paper_images = #{images}")
+    StudentAssignment selectByImages(Integer testId, String images);
+
+    @Update("update student_assignment " +
+            "set student_score = #{studentScore}, content = #{content}, title = #{title}, student_id = #{studentId} " +
+            "where test_paper_images = #{testPaperImages} and assignment_id = #{assignmentId}")
+    void updateByImages(StudentAssignment sa);
 
 
+
+    /**
+     * 学情分析
+    **/
+    @Select("SELECT   \n" +
+            "    class.id,   \n" +
+            "    class.class_name,   \n" +
+            "    AVG(sa.student_score) AS avg_score,  \n" +
+            "    MIN(sa.student_score) AS min_score,  \n" +
+            "    MAX(sa.student_score) AS max_score,  \n" +
+            "    SUM(CASE WHEN sa.student_score >=assignment.score*0.6  THEN 1 ELSE 0 END) AS passing_students_count  \n" +
+            "FROM   \n" +
+            "    student_assignment sa  \n" +
+            "JOIN   \n" +
+            "    student ON sa.student_id = student.id   \n" +
+            "JOIN   \n" +
+            "    class ON student.class_id = class.id  \n" +
+            "JOIN \n" +
+            "\t  assignment ON sa.assignment_id = assignment.id\n" +
+            "WHERE   \n" +
+            "    sa.assignment_id = #{assignmentId}  \n" +
+            "    AND sa.state = 2  \n" +
+            "    AND sa.type = 2  \n" +
+            "GROUP BY   \n" +
+            "    class.id, class.class_name  \n" +
+            "ORDER BY   \n" +
+            "    class.id;")
+    @Results({
+            @Result(property = "avgScore", column = "avg_score"),
+            @Result(property = "minScore", column = "min_score"),
+            @Result(property = "maxScore", column = "max_score"),
+    })
+    List<ClassScore> getClassAvgByExamId(Integer assignmentId);
 
 
 }

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -171,11 +172,14 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
             if(state==1||state==2){
                 //遍历每个班级
                 for (Class aClass : teacherAssignVO.getClassList()) {
-                    unCommittedNum+=studentAssignmentMapper.countTeaAssign(aClass.getId(),courseId, state, StudentAssignmentEnum.UNCOMMITTED.getCode());
-                    waitCorrectNum+=studentAssignmentMapper.countTeaAssign(aClass.getId(), courseId, state, StudentAssignmentEnum.WaitCorrect.getCode());
-                    finishedNum+=studentAssignmentMapper.countTeaAssign(aClass.getId(), courseId, state, StudentAssignmentEnum.FINISHED.getCode());
+                    unCommittedNum+=studentAssignmentMapper.countTeaAssign(assignment.getId(),aClass.getId(),courseId, state, StudentAssignmentEnum.UNCOMMITTED.getCode());
+                    System.out.println("unCommittedNum = " + unCommittedNum);
+                    waitCorrectNum+=studentAssignmentMapper.countTeaAssign(assignment.getId(),aClass.getId(), courseId, state, StudentAssignmentEnum.WaitCorrect.getCode());
+                    System.out.println("waitCorrectNum = " + waitCorrectNum);
+                    finishedNum+=studentAssignmentMapper.countTeaAssign(assignment.getId(),aClass.getId(), courseId, state, StudentAssignmentEnum.FINISHED.getCode());
+                    System.out.println("finishedNum = " + finishedNum);
                 }
-                allNum =unCommittedNum+waitCorrectNum+finishedNum;
+                allNum =unCommittedNum+waitCorrectNum;
             }
 
 
@@ -211,16 +215,24 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
             totalScore = totalScore.add(dto.getQuestionScore()); // 将每个对象的 questionScore 字段值加到总和中
             Question question =new Question();
             AssignmentDTOMapper.INSTANCE.AddDTOtoQuestion(dto,question);
-            question.setCourseId(course.getId());
-            question.setCourseName(course.getCourseName());
-            question.setCreatorId(teacher.getId());
-            question.setCreatorName(teacher.getName());
-            questionMapper.insert(question);
+            //如果题库中没有这个题目就添加进去
+            if(questionMapper.selectOne(new QueryWrapper<Question>().eq("title",question.getTitle()))==null){
+                question.setCourseId(course.getId());
+                question.setCourseName(course.getCourseName());
+                question.setCreatorId(teacher.getId());
+                question.setCreatorName(teacher.getName());
+
+                questionMapper.insert(question);
+            }
+
         }
         assignment.setScore(totalScore);
         assignment.setCreatorId(teacher.getId());
         assignment.setCreatorName(teacher.getName());
-        assignmentMapper.insert(assignment);
+        if(assignmentAddDTO.getAssignmentId()==null){
+            assignmentMapper.insert(assignment);
+        }else assignmentMapper.updateById(assignment);
+
         return assignment.getId();
     }
 
@@ -261,23 +273,43 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
                 .listByAIDCIDType(correctAssignmentDTO.getAssignmentId(),correctAssignmentDTO.getClassId(),
                         StudentAssignmentEnum.WaitCorrect.getCode(),AssignmentTypeEnum.EXAM.getCode());
         for (StudentAssignment studentAssignment : studentAssignmentList) {
-            ObjectMapper objectMapper =new ObjectMapper();
-            String answerJson =aiDubboService.correct(studentAssignment.getContent());
-            studentAssignment.setContent(answerJson);
-            //算总分数
-            List<AssignmentQuestionDTO> assignmentQuestionDTOList =
-                    Arrays.asList(objectMapper.readValue(studentAssignment.getContent(), AssignmentQuestionDTO[].class));
-            BigDecimal studentTotalScore = BigDecimal.ZERO; // 初始化总和为0
-
-
-            for (AssignmentQuestionDTO dto : assignmentQuestionDTOList) {
-                studentTotalScore = studentTotalScore.add(dto.getStudentScore()); // 将每个对象的 学生得分字段值加到总和中
-            }
-            studentAssignment.setStudentScore(studentTotalScore);
-            studentAssignment.setTeacherId(teacherId);
-            studentAssignmentMapper.updateById(studentAssignment);
+            correctOne(studentAssignment,teacherId);
         }
 
+    }
+
+    @Override
+    public void aiCorrectAll(Integer assignmentId, Integer teacherId) throws JsonProcessingException {
+        List<StudentAssignment> studentAssignmentList =studentAssignmentMapper.selectList(new QueryWrapper<StudentAssignment>()
+                .eq("assignment_id",assignmentId)
+                .eq("state",StudentAssignmentEnum.WaitCorrect.getCode()));
+
+        for (StudentAssignment studentAssignment : studentAssignmentList) {
+            correctOne(studentAssignment,teacherId);
+        }
+    }
+
+    private void correctOne(StudentAssignment studentAssignment, Integer teacherId) throws JsonProcessingException {
+        ObjectMapper objectMapper =new ObjectMapper();
+        String answerJson =aiDubboService.correct(studentAssignment.getContent());
+        studentAssignment.setContent(answerJson);
+        //算总分数
+        List<AssignmentQuestionDTO> assignmentQuestionDTOList =
+                Arrays.asList(objectMapper.readValue(studentAssignment.getContent(), AssignmentQuestionDTO[].class));
+        BigDecimal studentTotalScore = BigDecimal.ZERO; // 初始化总和为0
+
+
+        for (AssignmentQuestionDTO dto : assignmentQuestionDTOList) {
+            studentTotalScore = studentTotalScore.add(dto.getStudentScore()); // 将每个对象的 学生得分字段值加到总和中
+        }
+        studentAssignment.setStudentScore(studentTotalScore);
+        studentAssignment.setTeacherId(teacherId);
+
+        /**
+         * 改状态？
+        **/
+        studentAssignment.setState(2);
+        studentAssignmentMapper.updateById(studentAssignment);
     }
 
 

@@ -44,6 +44,23 @@ spring:
           uri: lb://wisdomHub-courseActivity  # lb是负载均衡，sentinel是注册中心要转发到的服务的端口对应的注册名
           predicates:
             - Path=/activity/**
+            - Path=/resource/**
+        - id: order_route # 路由名字
+          uri: lb://wisdomHub-learn  # lb是负载均衡，sentinel是注册中心要转发到的服务的端口对应的注册名
+          predicates:
+            - Path=/testPaper/**
+        - id: wisdomHub-user # 路由名字
+          uri: lb://wisdomHub-user  # lb是负载均衡，sentinel是注册中心要转发到的服务的端口对应的注册名
+          predicates:
+            - Path=/user/**
+        - id: wisdomHub-courseActivity # 路由名字
+          uri: lb://wisdomHub-courseActivity  # lb是负载均衡，sentinel是注册中心要转发到的服务的端口对应的注册名
+          predicates:
+            - Path=/activity/**
+        - id: wisdomHub-courseActivity # 路由名字
+          uri: lb://wisdomHub-courseActivity  # lb是负载均衡，sentinel是注册中心要转发到的服务的端口对应的注册名
+          predicates:
+            - Path=/class/**
 
 #            - Path=/course/**
 #            - Path=/question/**

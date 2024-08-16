@@ -31,6 +31,7 @@ import java.util.List;
  ***
   *
  **/
+
 @Slf4j
 @RestController
 @RequestMapping("/assignment")
@@ -104,7 +105,7 @@ public class AssignmentController {
     @PutMapping("")
     public BaseResult assignment(@RequestBody StudentAssignmentDTO studentAssignmentDTO) throws JsonProcessingException {
         studentAssignmentService.writeAssignment(studentAssignmentDTO);
-        return new BaseResult(200,"成功");
+        return new BaseResult(200,"提交作业考试成功");
     }
 
 
@@ -155,7 +156,7 @@ public class AssignmentController {
      **/
     @PutMapping("/teacher")
     public BaseResult assignment(@RequestBody AssignmentAddDTO assignmentAddDTO) throws JsonProcessingException {
-       Integer assignmentId = assignmentService.saveAssignAndQuestion(assignmentAddDTO);
+        Integer assignmentId = assignmentService.saveAssignAndQuestion(assignmentAddDTO);
         return new BaseResult(200,"添加或编辑作业考试成功",assignmentId);
     }
 
@@ -227,8 +228,7 @@ public class AssignmentController {
     @PutMapping("/correct")
     public BaseResult correctAssignment(@RequestBody AssignmentCorrectDTO assignmentCorrectDTO) throws IOException {
         QueryWrapper<StudentAssignment> studentAssignmentQueryWrapper =new QueryWrapper<StudentAssignment>()
-                .eq("assignment_id",assignmentCorrectDTO.getAssignmentId())
-                .eq("student_id",assignmentCorrectDTO.getStudentId());
+                .eq("id",assignmentCorrectDTO.getStudentAssignmentId());
         StudentAssignment studentAssignment =studentAssignmentService.getOne(studentAssignmentQueryWrapper);
         studentAssignment.setTeacherId(assignmentCorrectDTO.getTeacherId());
         studentAssignment.setComment(assignmentCorrectDTO.getComment());
@@ -242,6 +242,7 @@ public class AssignmentController {
             studentAllScore.add(assignmentQuestionDTO.getStudentScore());
         }
         studentAssignment.setStudentScore(studentAllScore);
+        studentAssignment.setState(2);
         studentAssignmentService.updateById(studentAssignment);
         return new BaseResult(200,"批改成功");
     }
@@ -296,8 +297,25 @@ public class AssignmentController {
     @PutMapping("/ai-correct")
     public BaseResult aiCorrect(@RequestBody  CorrectAssignmentDTO correctAssignmentDTO) throws JsonProcessingException {
         assignmentService.aiCorrect(correctAssignmentDTO);
-        return new BaseResult(200,"智能批阅成功");
+        return new BaseResult(200,"智能批阅班级成功");
     }
+
+
+
+    /**
+     * 智能批阅一场考试
+     * @author 宁舒意
+     * @date 20:18 2024/8/14
+     * @param assignmentId 作业id
+     * @param teacherId  老师id
+     * @return com.nsy.model.BaseResult
+     */
+    @PutMapping("/ai-correct-all/{assignmentId}/{teacherId}")
+    public BaseResult aiCorrectAll(@PathVariable Integer assignmentId,@PathVariable Integer teacherId) throws JsonProcessingException {
+        assignmentService.aiCorrectAll(assignmentId,teacherId);
+        return new BaseResult(200,"智能批阅全体成功");
+    }
+
 
     /**
      *根据classId和assignmentId分析班级这次考试整体情况
@@ -305,7 +323,32 @@ public class AssignmentController {
     **/
 
 
+    /**
+     * 考情分析
+     * @author 宁舒意
+     * @date 10:28 2024/8/13
+     * @param courseId 课程id
+     * @return com.nsy.model.BaseResult
+     */
+    @GetMapping("/study_analysis")
+    public BaseResult<ExamAnalysisDTO> studentAnalysis(@RequestParam Integer courseId){
+        List<ExamAnalysisDTO> examAnalysisDTOList =studentAssignmentService.getExamAnalysis(courseId);
+        return new BaseResult(200,"学情分析数据",examAnalysisDTOList);
+    }
 
+
+    /**
+     * 教师：获取某次作业或考试
+     * @author 宁舒意
+     * @date 20:35 2024/8/14
+     * @param assignmentId
+     * @return com.nsy.model.BaseResult<com.nsy.model.pojo.Assignment>
+     */
+    @GetMapping("/one/{assignmentId}")
+    public BaseResult<Assignment> getAssignment(@PathVariable Integer assignmentId){
+        Assignment assignment = assignmentService.getById(assignmentId);
+        return new BaseResult<>(200,"获取作业或考试成功",assignment);
+    }
 
 
 

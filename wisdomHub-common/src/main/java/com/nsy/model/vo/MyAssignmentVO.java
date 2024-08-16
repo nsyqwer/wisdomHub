@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -24,7 +25,7 @@ public class MyAssignmentVO {
     /**
      * 结束时间
      */
-    private Date endDate;
+    private LocalDateTime endDate;
 
     /**
      * 作业标题
@@ -35,6 +36,11 @@ public class MyAssignmentVO {
      * 作业状态，已完成，未完成，待批阅
      */
     private String state;
+
+    /**
+     * 如果是考试的话，还需要考试时间
+    **/
+    private Integer examTime;
 
 
 

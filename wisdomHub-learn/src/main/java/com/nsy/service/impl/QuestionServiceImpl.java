@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nsy.mapper.QuestionMapper;
 import com.nsy.model.pojo.Question;
 import com.nsy.service.QuestionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,6 +15,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
     implements QuestionService {
+
+    @Autowired
+    private QuestionMapper questionMapper;
+
 
 
 

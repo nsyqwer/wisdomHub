@@ -14,7 +14,9 @@ import org.springframework.core.convert.converter.Converter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
+/**
+ * 加了这个配置类之后，从数据库的date属性读出来的时间会按照这个格式yyyy-MM-dd HH:mm:ss
+**/
 @Configuration
 public class LocalDateTimeSerializerConfig {
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";

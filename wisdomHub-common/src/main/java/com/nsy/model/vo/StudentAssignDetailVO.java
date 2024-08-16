@@ -39,5 +39,10 @@ public class StudentAssignDetailVO {
      */
     private BigDecimal studentScore;
 
+    /**
+     * 总评语
+    **/
+    private String comment;
+
 
 }
