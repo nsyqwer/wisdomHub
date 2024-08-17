@@ -99,6 +99,11 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
             "set student_score = #{studentScore}, content = #{content}, title = #{title}, student_id = #{studentId} " +
             "where test_paper_images = #{testPaperImages} and assignment_id = #{assignmentId}")
     void updateByImages(StudentAssignment sa);
+
+    @Update("update student_assignment " +
+            "set assignment_id = #{assignmentId} " +
+            "where assignment_id = #{testPaperId}")
+    void updateAssignmentIdById(Integer testPaperId, Integer assignmentId);
 }
 
 

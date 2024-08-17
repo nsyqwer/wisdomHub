@@ -14,7 +14,7 @@ import lombok.Data;
 import lombok.Value;
 
 /**
- * 
+ *
  * @TableName assignment
  */
 @TableName(value ="assignment")
@@ -41,12 +41,14 @@ public class Assignment implements Serializable {
     /**
      * 开始时间
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "begin_date")
     private LocalDateTime beginDate;
 
     /**
      * 结束时间
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "end_date")
     private LocalDateTime endDate;
 
@@ -76,19 +78,34 @@ public class Assignment implements Serializable {
 
     /**
      * 作业1，考试2
-    **/
+     **/
     @TableField(value = "type")
     private Integer type;
 
     /**
      * 考试时间，单位是分钟
-    **/
-    @TableField
+     **/
+    @TableField(value ="exam_time" )
     private Integer examTime;
+
+
+    /**
+     * 创建者id
+     **/
+    @TableField(value ="creator_id" )
+    private Integer creatorId;
+
+
+    /**
+     * 创建者名字
+     **/
+    @TableField(value ="creator_name" )
+    private String creatorName;
 
     /**
      * class_list,发放作业的对象
-    **/
+     **/
+    @TableField(value = "class_list")
     private String classList;
 
     @TableField(exist = false)
