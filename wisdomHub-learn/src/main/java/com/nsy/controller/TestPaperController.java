@@ -60,6 +60,8 @@ public class TestPaperController{
     public BaseResult<Integer> addTestPaper(@RequestParam Integer teacherId, @RequestParam Integer courseId){
         log.info("新建试卷成功");
         TestPaper testPaper = testPaperService.addTestPaper(teacherId, courseId);
+
+        System.out.println("新建试卷：" + testPaper);
         return new BaseResult<>(200, "新建试卷成功", testPaper.getId());
     }
 

@@ -184,6 +184,11 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
     List<ClassScore> getClassAvgByExamId(Integer assignmentId);
 
 
+
+    @Update("update student_assignment " +
+            "set assignment_id = #{assignmentId} " +
+            "where assignment_id = #{testPaperId}")
+    void updateAssignmentIdById(Integer testPaperId, Integer assignmentId);
 }
 
 

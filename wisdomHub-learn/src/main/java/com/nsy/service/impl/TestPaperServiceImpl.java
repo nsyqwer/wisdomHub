@@ -2,21 +2,29 @@ package com.nsy.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.nsy.mapper.CourseMapper;
-import com.nsy.mapper.StudentAssignmentMapper;
-import com.nsy.mapper.TeacherMapper;
-import com.nsy.mapper.TestPaperMapper;
+import com.google.gson.JsonObject;
+import com.nsy.mapper.*;
 import com.nsy.mapper.mapstruct.TestPaperDtoMapper;
 import com.nsy.model.dto.SaveQuestionInfo;
 import com.nsy.model.dto.SaveTestPaperDto;
 import com.nsy.model.dto.StudentTestPaperInfo;
 import com.nsy.model.dto.TestPaperAnswer;
+import com.nsy.model.pojo.Assignment;
+import com.nsy.model.pojo.Student;
+import com.nsy.model.pojo.StudentAssignment;
 import com.nsy.model.pojo.TestPaper;
+import com.nsy.service.ClassService;
 import com.nsy.service.TestPaperService;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +48,10 @@ public class TestPaperServiceImpl extends ServiceImpl<TestPaperMapper, TestPaper
     CourseMapper courseMapper;
     @Autowired
     StudentAssignmentMapper studentAssignmentMapper;
+    @Autowired
+    StudentMapper studentMapper;
+    @Autowired
+    AssignmentMapper assignmentMapper;
 
     @Override
     public TestPaper saveAsDraft(SaveTestPaperDto saveTestPaperDto, int state) {
@@ -119,8 +131,110 @@ public class TestPaperServiceImpl extends ServiceImpl<TestPaperMapper, TestPaper
 
     @Override
     public void finish(Integer id) {
+        //进行试卷数据库的状态更改
         testPaperMapper.finish();
         studentAssignmentMapper.updateStateByTest(id);
+
+        List<StudentAssignment> studentAssignmentList = studentAssignmentMapper.selectList(new QueryWrapper<StudentAssignment>().eq("assignment_id", id));
+
+        Set<JsonObject> classes = new HashSet<>();
+        int number = studentAssignmentList.size();
+        for(StudentAssignment studentAssignment: studentAssignmentList){
+            Integer studentId = studentAssignment.getStudentId();
+            Student student = studentMapper.selectById(studentId);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("id", student.getClassId());
+            jsonObject.addProperty("className", student.getClassName());
+
+            classes.add(jsonObject);
+        }
+        System.out.println("班级：" + classes);
+
+        //添加到考试数据库中
+        TestPaper testPaper = testPaperMapper.selectById(id);
+        testPaper.setClassList(classes.toString());
+        testPaper.setNumber(number);
+        testPaper.setTime(LocalDateTime.now());
+
+        testPaperMapper.updateById(testPaper);
+
+        Assignment assignment = new Assignment();
+
+        assignment.setCourseId(testPaper.getCourseId());
+        assignment.setCourseName(testPaper.getCourseName());
+        assignment.setBeginDate(testPaper.getTime());
+        assignment.setEndDate(testPaper.getTime());
+        assignment.setScore(new BigDecimal(testPaper.getScore()));
+        assignment.setTitle(testPaper.getTitle());
+        assignment.setState(2);
+        assignment.setType(3);
+        assignment.setExamTime(0);
+        assignment.setClassList(testPaper.getClassList());
+        assignment.setCreatorId(testPaper.getTeacherId());
+        assignment.setCreatorName(testPaper.getTeacherName());
+
+        assignmentMapper.insert(assignment);
+
+        testPaperMapper.updateIdById(testPaper.getId(), assignment.getId());
+
+        setStudentAssignment(testPaper, studentAssignmentList);
+        studentAssignmentMapper.updateAssignmentIdById(testPaper.getId(), assignment.getId());
+    }
+
+    public void setStudentAssignment(TestPaper testPaper, List<StudentAssignment> studentAssignmentList){
+
+        JSONArray questions = new JSONArray(testPaper.getQuestions());
+        JSONArray answers = new JSONArray(testPaper.getAnswers());
+
+        for(StudentAssignment studentAssignment: studentAssignmentList) {
+            System.out.println("进行更改的学生信息：" + studentAssignment);
+            JSONArray studentAnswers = new JSONObject(studentAssignment.getContent()).getJSONArray("studentAnswer");
+            JSONArray marks = new JSONObject(studentAssignment.getContent()).getJSONArray("mark");
+
+            List<JsonObject> questionList = new ArrayList<>();
+
+            for (int i = 0; i < questions.length(); i++) {
+                JsonObject jsonObject = new JsonObject();
+
+                JSONObject question = questions.getJSONObject(i);
+                JSONObject answer = answers.getJSONObject(i);
+
+                try {
+                    JSONObject studentAnswer = studentAnswers.getJSONObject(i);
+                    jsonObject.addProperty("studentAnswer", studentAnswer.get("studentAnswer").toString());
+                }
+                catch (Exception e){
+                    jsonObject.addProperty("studentAnswer", "");
+                    System.out.println(i + " 报错信息：" + e);
+                    System.out.println("报错" + studentAnswers);
+                }
+
+                try{
+                    JSONObject mark = marks.getJSONObject(i);
+                    jsonObject.addProperty("questionComment", mark.getString("questionComment"));
+                    jsonObject.addProperty("studentScore", mark.getInt("studentScore"));
+                }
+                catch (Exception e){
+                    jsonObject.addProperty("questionComment", "");
+                    jsonObject.addProperty("studentScore", "");
+                }
+
+                jsonObject.addProperty("questionScore", question.getInt("questionScore"));
+                jsonObject.addProperty("title", question.getJSONObject("title").toString());
+                jsonObject.addProperty("type", question.getString("type"));
+
+                jsonObject.addProperty("answer", answer.getString("answer"));
+                jsonObject.addProperty("answerAnalysis", "");
+
+                questionList.add(jsonObject);
+            }
+            System.out.println("一个学生的问题集合：" + questionList);
+            studentAssignment.setContent(questionList.toString());
+
+            studentAssignmentMapper.updateById(studentAssignment);
+        }
+
+//        return questionList.toString();
     }
 
     @Override
@@ -140,3 +254,7 @@ public class TestPaperServiceImpl extends ServiceImpl<TestPaperMapper, TestPaper
         return lists;
     }
 }
+
+
+
+

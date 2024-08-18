@@ -50,4 +50,11 @@ public interface TestPaperMapper extends BaseMapper<TestPaper> {
             "set test_paper_images = #{json} " +
             "where state = 0 and id = #{testId}")
     void insertImageLists(String json, Integer testId);
+
+    @Update("update test_paper set id = #{assignmentId} where id = #{testPaperId}")
+    void updateIdById(Integer testPaperId, Integer assignmentId);
 }
+
+
+
+

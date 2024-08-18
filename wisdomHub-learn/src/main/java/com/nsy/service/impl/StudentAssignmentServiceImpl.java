@@ -160,10 +160,12 @@ public class StudentAssignmentServiceImpl extends ServiceImpl<StudentAssignmentM
         studentAssignment.setCourseId(testPaper.getCourseId());
         studentAssignment.setTitle(testPaper.getTitle());
         studentAssignment.setTeacherId(testPaper.getTeacherId());
-        studentAssignment.setType(3);
-        studentAssignment.setState(0);
+        studentAssignment.setType(2);
+        studentAssignment.setState(2);
 
         StudentAssignment studentAssignment1 = studentAssignmentMapper.selectByImages(studentAnswer.getTestId(), testPaperImages);
+
+        System.out.println("学生试卷：" + studentAssignment);
 
         if(studentAssignment1 == null) {
             studentAssignmentMapper.insert(studentAssignment);

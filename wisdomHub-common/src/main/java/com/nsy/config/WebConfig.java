@@ -19,7 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
         converters.forEach(converter -> {
             if (converter instanceof MappingJackson2HttpMessageConverter) {
                 ((MappingJackson2HttpMessageConverter) converter).getObjectMapper()
-                        .setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+                        .setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
             }
         });
     }

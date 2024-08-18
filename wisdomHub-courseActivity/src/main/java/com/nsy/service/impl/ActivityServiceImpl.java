@@ -114,7 +114,10 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity>
         List<Student> students = studentMapper.selectByClassId(activity.getClassId());
         System.out.println(students);
         if (activity.getType() == 0) { // 智能考勤
-            List<Student> noReachStudents = WebFaceDetect.getNoReachStudents(students, activity.getAnswerImage());
+            activity.setBeginTime(LocalDateTime.now());
+            activity.setEndTime(LocalDateTime.now());
+
+            List<Student> noReachStudents = WebFaceDetect.getNoReachStudents(students, activity.getAnswerImage(), activity.getClassId());
             System.out.println("检测后的图片：" + WebFaceDetect.detection_image);
             activity.setDetectionImage(WebFaceDetect.detection_image);
 

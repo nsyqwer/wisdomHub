@@ -32,4 +32,8 @@ public interface TestPaperService extends IService<TestPaper> {
     void saveImageLists(List<List<String>> lists, Integer testId);
 
     List<List<String>> getImageLists(Integer testId);
+
+
+
 }
+
