@@ -111,12 +111,13 @@ public class CourseController {
     /**
      * 教师：创建课程
      * @author 宁舒意
-     * @date 19:25 2024/5/19
-     * @param course 课程实体
-     * @return com.nsy.model.BaseResult
-     **/
+     * @date 11:35 2024/8/17
+     * @param course
+     * @param teacherId
+     * @return com.nsy.model.BaseResult<java.lang.Integer>
+     */
     @PutMapping("")
-    public BaseResult saveCourse(@RequestBody Course course,@RequestParam Integer teacherId){
+    public BaseResult<Integer> saveCourse(@RequestBody Course course,@RequestParam Integer teacherId){
         courseService.save(course);
         TeacherCourse teacherCourse=new TeacherCourse();
         teacherCourse.setCourseId(course.getId());
@@ -124,7 +125,7 @@ public class CourseController {
         teacherCourse.setCourseImage(course.getImage());
         teacherCourse.setTeacherId(teacherId);
         teacherCourseService.save(teacherCourse);
-        return new BaseResult(200,"创建成功");
+        return new BaseResult<Integer>(200,"创建成功",teacherCourse.getCourseId());
     }
 
 

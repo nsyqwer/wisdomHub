@@ -29,20 +29,20 @@ public class AIDubboServiceImpl implements AIDubboService {
 
     @Override
     public void createKnowledgeGraph(String question,Integer courseId) throws IOException {
-        String answer = xfxhService.sendQuestion(question,1);
+        String answer = xfxhService.sendQuestion(question,1,false);
         knowledgeService.saveKnowledgeFromJson(answer,courseId);
     }
 
 
     @Override
     public String createMindMap(String question) {
-        String answer =xfxhService.sendQuestion(question,2);
+        String answer =xfxhService.sendQuestion(question,2,true);
         return answer;
     }
 
     @Override
     public String correct(String question) {
-        String answer =xfxhService.sendQuestion(question,3);
+        String answer =xfxhService.sendQuestion(question,3,false);
         return answer;
     }
 
@@ -54,7 +54,7 @@ public class AIDubboServiceImpl implements AIDubboService {
 
     @Override
     public String createQuestion(String material, String t, String n1, String n2, String n3) {
-        String questionString =xfxhService.sendQuestion(String.format("材料：%s, 难度系数：%s, 选择题个数：%s, 填空题数：%s, 问答题数：%s", material, t, n1, n2, n3),4);
+        String questionString =xfxhService.sendQuestion(String.format("材料：%s, 难度系数：%s, 选择题个数：%s, 填空题数：%s, 问答题数：%s", material, t, n1, n2, n3),4,false);
         return questionString;
     }
 
@@ -65,11 +65,11 @@ public class AIDubboServiceImpl implements AIDubboService {
 
     @Override
     public String createPath(String query) {
-        return xfxhService.sendQuestion(query,5);
+        return xfxhService.sendQuestion(query,5,true);
     }
 
     @Override
     public String recommendQuestion(String json) {
-        return xfxhService.sendQuestion(json,6);
+        return xfxhService.sendQuestion(json,6,false);
     }
 }

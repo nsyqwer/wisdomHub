@@ -179,7 +179,7 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
                     finishedNum+=studentAssignmentMapper.countTeaAssign(assignment.getId(),aClass.getId(), courseId, state, StudentAssignmentEnum.FINISHED.getCode());
                     System.out.println("finishedNum = " + finishedNum);
                 }
-                allNum =unCommittedNum+waitCorrectNum;
+                allNum =unCommittedNum+waitCorrectNum+finishedNum;
             }
 
 
