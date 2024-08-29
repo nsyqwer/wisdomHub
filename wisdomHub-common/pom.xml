@@ -23,6 +23,12 @@
         <commons.collections.version>3.2.2</commons.collections.version>
     </properties>
     <dependencies>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version> <!-- 请检查最新的版本号 -->
+        </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>

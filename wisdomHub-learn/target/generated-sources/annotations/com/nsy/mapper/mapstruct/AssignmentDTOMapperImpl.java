@@ -16,7 +16,7 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-08-13T19:04:07+0800",
+    date = "2024-08-18T22:51:40+0800",
     comments = "version: 1.5.0.Final, compiler: javac, environment: Java 1.8.0_362 (BellSoft)"
 )
 public class AssignmentDTOMapperImpl implements AssignmentDTOMapper {

@@ -208,6 +208,7 @@ public class StudentAssignmentServiceImpl extends ServiceImpl<StudentAssignmentM
             examAnalysisDTO.setTitle(assignment.getTitle());
             List<ClassScore> classScoreList =studentAssignmentMapper.getClassAvgByExamId(assignment.getId());
             examAnalysisDTO.setClassScoreList(classScoreList);
+            examAnalysisDTOS.add(examAnalysisDTO);
         }
 
         return examAnalysisDTOS;

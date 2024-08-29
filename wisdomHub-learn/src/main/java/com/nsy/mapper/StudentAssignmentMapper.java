@@ -180,6 +180,7 @@ public interface StudentAssignmentMapper extends BaseMapper<StudentAssignment> {
             @Result(property = "avgScore", column = "avg_score"),
             @Result(property = "minScore", column = "min_score"),
             @Result(property = "maxScore", column = "max_score"),
+            @Result(property = "classId", column = "id"),
     })
     List<ClassScore> getClassAvgByExamId(Integer assignmentId);
 

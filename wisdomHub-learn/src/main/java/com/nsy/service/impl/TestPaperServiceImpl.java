@@ -142,6 +142,8 @@ public class TestPaperServiceImpl extends ServiceImpl<TestPaperMapper, TestPaper
         for(StudentAssignment studentAssignment: studentAssignmentList){
             Integer studentId = studentAssignment.getStudentId();
             Student student = studentMapper.selectById(studentId);
+            System.out.println("学生：" + studentId);
+
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("id", student.getClassId());
             jsonObject.addProperty("className", student.getClassName());
@@ -167,7 +169,7 @@ public class TestPaperServiceImpl extends ServiceImpl<TestPaperMapper, TestPaper
         assignment.setScore(new BigDecimal(testPaper.getScore()));
         assignment.setTitle(testPaper.getTitle());
         assignment.setState(2);
-        assignment.setType(3);
+        assignment.setType(2);
         assignment.setExamTime(0);
         assignment.setClassList(testPaper.getClassList());
         assignment.setCreatorId(testPaper.getTeacherId());

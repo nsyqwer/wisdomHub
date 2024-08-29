@@ -55,7 +55,13 @@ public class XfxhService {
             "  \"questionComment\": null,\n" +
             "  \"answer\": null,\n" +
             "  \"answerAnalysis\": null\n" +
-            "}\n ,这个json中questionScore根据学生具体作答判断:如果studentAnswer与answer一致，就得到满分，即questionScore,否则为0分，如果不是简答题就按照语义匹配度来打分,将分数填在studentScore属性的值里面，" +
+            "}\n ,这个格式特别注意这个title字段，如果type是选择题，这个title就是 \\\"title\\\": {\\n\" +\n" +
+            "            \"                \\\"text\\\": \\\"XXX\\\",\\n\" +\n" +
+            "            \"                \\\"options\\\": [\\\"XXX\\\",\\\"XXX\\\",\\\"XXX\\\",\\\"XXX\\\"]\\n\" +\n" +
+            "            \"            }这个格式，type不是选择题的话这个title就是 \\\"title\\\": {\\n\" +\n" +
+            "            \"        \\\"text\\\": \\\"XXX\\\",\\n\" +\n" +
+            "            \"        \\\"options\\\": []\\n\" +\n" +
+            "            \"    }\"这个格式。这个整个json中questionScore根据学生具体作答判断:对于选择题，如果studentAnswer与answer一致，就得到满分，即questionScore,否则为0分，如果是简答题就按照语义匹配度来打分,将分数填在studentScore属性的值里面，" +
             "并且根据学生作答studentAnswer结合答案解析answerAnalysis或者答案answer给出评语(学生这道题为什么做错了),填在questionComment里面，且大于20字不超过100字，除了studentScore和questionComment外，其他所有字段和我接下来的输入的json一致，返回给我json,这是我的输入：";
 
 

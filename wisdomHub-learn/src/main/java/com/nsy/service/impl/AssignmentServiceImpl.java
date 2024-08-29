@@ -216,14 +216,14 @@ public class AssignmentServiceImpl extends ServiceImpl<AssignmentMapper, Assignm
             Question question =new Question();
             AssignmentDTOMapper.INSTANCE.AddDTOtoQuestion(dto,question);
             //如果题库中没有这个题目就添加进去
-            if(questionMapper.selectOne(new QueryWrapper<Question>().eq("title",question.getTitle()))==null){
+            //if(questionMapper.selectOne(new QueryWrapper<Question>().eq("title",question.getTitle()))==null){
                 question.setCourseId(course.getId());
                 question.setCourseName(course.getCourseName());
                 question.setCreatorId(teacher.getId());
                 question.setCreatorName(teacher.getName());
 
                 questionMapper.insert(question);
-            }
+            //}
 
         }
         assignment.setScore(totalScore);

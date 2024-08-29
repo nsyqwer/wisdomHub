@@ -13,6 +13,7 @@ import com.nsy.service.ActivityService;
 import com.nsy.service.StudentActivityService;
 import com.nsy.service.StudentService;
 import com.nsy.util.OSSUtils;
+import com.nsy.util.xunfei.example.BigModelNew;
 import com.nsy.util.xunfei.example.Main;
 import com.nsy.util.xunfei.face.WebFaceBaidu;
 import com.nsy.util.xunfei.face.WebFaceDetect;
@@ -321,8 +322,21 @@ public class ActivityController {
     **/
 
     @GetMapping("getSignature")
-    public BaseResult<String> getSignature(){
+    public BaseResult<String> getSignature() throws Exception {
+        return new BaseResult<>(200, "获取鉴权信息请求成功", BigModelNew.getRequestUrl());
+    }
+
+    /***
+     *
+     * @author 宁舒意
+     * @date 12:31 2024/8/21
+     * @return com.nsy.model.BaseResult<java.lang.String>
+     */
+    @GetMapping("getSignature2")
+    public BaseResult<String> getSignature2() throws Exception {
         return new BaseResult<>(200, "获取鉴权信息请求成功", Main.getRequestUrl());
     }
+
+
 
 }

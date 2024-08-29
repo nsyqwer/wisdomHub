@@ -91,7 +91,21 @@ public class QuestionController {
      */
     @PutMapping("")
     public BaseResult question(@RequestBody Question question){
+        System.out.println("问题：" + question);
+        if(question.getCourseId() == null){
+            List<Course> courses = courseService.list();
+            for(Course course : courses){
+                question.setCourseName(course.getCourseName());
+//                System.out.println("问题：" + question);
+                question.setId(null);
+                question.setCourseId(course.getId());
+                questionService.save(question);
+                System.out.println("课程：" + course);
+            }
+            return new BaseResult(200, "添加所有课程题目成功");
+        }
         Course course =courseService.getById(question.getCourseId());
+        System.out.println("课程：" + course);
         question.setCourseName(course.getCourseName());
         questionService.save(question);
         return new BaseResult(200,"添加成功");
